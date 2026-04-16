@@ -10,22 +10,19 @@ use App\Http\Controllers\Customer\{
     DashboardController as CustomerDashboardController, OrderController as CustomerOrderController, RentController as CustomerRentController,
     SettingController as CustomerSettingController
 };
-use App\Http\Controllers\{
-    LandingController, ItemController as LandingItemController,
-    CategoryController as LandingCategoryController
-};
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', LandingController::class)->name('landing');
+Route::redirect('/', '/login');
 
-Route::controller(LandingCategoryController::class)->as('category.')->group(function(){
-    Route::get('/category', 'index')->name('index');
-    Route::get('/category/{slug}', 'show')->name('show');
-});
-
-Route::controller(LandingItemController::class)->as('item.')->group(function(){
-    Route::get('/item', 'index')->name('index');
-    Route::get('/item/{slug}', 'show')->name('show');
+Route::get('/home', function () {
+    if (auth()->check()) {
+        if (auth()->user()->hasRole(['Admin', 'Super Admin'])) {
+            return redirect()->route('admin.dashboard');
+        } else {
+            return redirect()->route('customer.dashboard');
+        }
+    }
+    return redirect('/login');
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:Admin|Super Admin']], function () {

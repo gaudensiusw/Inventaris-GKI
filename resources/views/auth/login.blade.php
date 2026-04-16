@@ -1,62 +1,139 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="id">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Login - Inventory System</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <meta name="msapplication-TileColor" content="#206bc4" />
-    <meta name="theme-color" content="#206bc4" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="MobileOptimized" content="320" />
-    <meta name="robots" content="noindex,nofollow,noarchive" />
-    <link rel="icon" href="{{ asset('icon.png') }}" type="image/x-icon" />
-    <link rel="shortcut icon" href="{{ asset('icon.png') }}" type="image/x-icon" />
-    <!-- Tabler Core -->
-    <link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet" />
+    <title>Login - Sistem Inventaris GKI Delima</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
 </head>
 
-<body class="antialiased border-top-wide border-primary d-flex flex-column">
-    <div class="flex-fill d-flex flex-column justify-content-center">
-        <div class="container-tight py-6">
-            <form class="card card-md border-0 rounded-3" action="{{ route('login') }}" method="POST">
-                @csrf
-                <div class="card-body">
-                    <h3 class="text-center mb-3 font-weight-medium">
-                        Login
-                    </h3>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control @error('email') is-invalid @enderror"
-                            placeholder="masukan email anda" name="email">
-                        @error('email')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Kata Sandi</label>
-                        <input type="password" class="form-control @error('password') is-invalid @enderror"
-                            placeholder="masukan kata sandi anda" name="password">
-                        @error('password')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+<body class="antialiased min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-5xl w-full flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        
+        <!-- Left Side: Branding -->
+        <div class="hidden md:flex flex-col flex-1 pl-4">
+            <div class="flex items-center w-max bg-blue-500 rounded-full text-white text-sm font-semibold mb-6 overflow-hidden shadow-sm">
+                <span class="bg-blue-600 px-4 py-2">GKI</span>
+                <span class="px-4 py-2">GKI Delima</span>
+            </div>
+            
+            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-2 leading-tight">
+                Sistem Inventaris <br>
+                <span class="text-blue-600">GKI Delima</span>
+            </h1>
+            
+            <p class="text-gray-600 mb-10 max-w-md text-base leading-relaxed">
+                Kelola aset gereja dengan mudah dan efisien menggunakan sistem inventaris modern dengan QR code scanner.
+            </p>
+            
+            <div class="flex gap-4">
+                <div class="bg-white border hover:shadow-md transition duration-300 rounded-xl p-4 flex flex-col min-w-[140px] shadow-sm">
+                    <span class="text-blue-600 font-bold text-2xl mb-1">500+</span>
+                    <span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Total Barang</span>
+                </div>
+                <div class="bg-white border hover:shadow-md transition duration-300 rounded-xl p-4 flex flex-col min-w-[140px] shadow-sm">
+                    <span class="text-green-600 font-bold text-2xl mb-1 flex items-center">
+                        QR
+                    </span>
+                    <span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Scan Ready</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Login Form -->
+        <div class="w-full max-w-md">
+            <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+                
+                <div class="flex justify-center mb-6">
+                    <div class="bg-blue-50 text-blue-600 p-3 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path>
+                            <path d="M20 12h-13l3 -3m0 6l-3 -3"></path>
+                        </svg>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-</body>
 
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Selamat Datang</h2>
+                    <p class="text-gray-500 text-sm">Silakan login untuk melanjutkan</p>
+                </div>
+
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none transition duration-200"
+                            placeholder="nama@gkidelima.org">
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input type="password" name="password" required
+                            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none transition duration-200"
+                            placeholder="••••••••">
+                        @error('password')
+                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-8">
+                        <span class="block text-sm font-medium text-gray-700 mb-3">Pilih Role (Panduan Login)</span>
+                        <div class="flex gap-3">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="role_selector" class="peer sr-only" value="admin" checked>
+                                <div class="rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all peer-checked:bg-red-50 peer-checked:border-red-100 peer-checked:text-red-700 flex flex-col items-center justify-center gap-1 group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400 group-hover:text-red-500 peer-checked:text-red-600" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M12 3l8 4.5l0 8.5a12 12 0 0 1 -8 8.5a12 12 0 0 1 -8 -8.5l0 -8.5l8 -4.5"></path>
+                                    </svg>
+                                    <span class="text-xs font-semibold text-gray-600 peer-checked:text-red-700">Admin</span>
+                                </div>
+                            </label>
+                            
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="role_selector" class="peer sr-only" value="user">
+                                <div class="rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all peer-checked:bg-blue-50 peer-checked:border-blue-100 peer-checked:text-blue-700 flex flex-col items-center justify-center gap-1 group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400 group-hover:text-blue-500 peer-checked:text-blue-600" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                                    </svg>
+                                    <span class="text-xs font-semibold text-gray-600 peer-checked:text-blue-700">User</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center gap-2">
+                        Login
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-400 mt-6 font-medium">
+                        View & Print - Lihat dan cetak <br>
+                        Demo: Hubungi administrator untuk kredensial.
+                    </p>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</body>
 </html>

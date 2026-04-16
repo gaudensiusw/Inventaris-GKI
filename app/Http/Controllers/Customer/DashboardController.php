@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Models\Rent;
 use App\Models\Order;
-use App\Enums\OrderStatus;
-use App\Models\Transaction;
+use App\Models\Item;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,14 +20,15 @@ class DashboardController extends Controller
     {
         $user = Auth::id();
 
-        $vehicles = Rent::with('user', 'vehicle')->where('user_id', $user)->get();
+        // Ambil riwayat pinjaman aktif milik user yang login
+        $activeLoans = Order::with('item')
+            ->where('user_id', $user)
+            ->whereIn('status', ['Pending', 'Approved'])
+            ->get();
 
-        $products = Order::with('user')->where('user_id', $user)->get();
+        // Ambil semua item yang tersedia agar customer bisa meminjam dari dashboard
+        $items = Item::with(['category', 'room'])->where('status', 'Tersedia')->get();
 
-        $transactions = Transaction::with('details', 'user')->where('user_id', $user)->get();
-
-        $orders = Order::with('user')->where('user_id', $user)->where('status', OrderStatus::Pending)->get();
-
-        return view('customer.dashboard', compact('vehicles', 'products', 'orders', 'transactions'));
+        return view('customer.dashboard', compact('activeLoans', 'items'));
     }
 }
