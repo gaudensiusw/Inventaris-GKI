@@ -78,12 +78,19 @@
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
+                    <input type="hidden" name="role_selector" id="role_input" value="admin">
+
+                    @if(session('role_error'))
+                        <div class="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-4">
+                            {{ session('role_error') }}
+                        </div>
+                    @endif
 
                     <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
                         <input type="email" name="email" value="{{ old('email') }}" required autofocus
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none transition duration-200"
-                            placeholder="nama@gmail.com">
+                            placeholder="Username">
                         @error('email')
                             <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                         @enderror
@@ -93,7 +100,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <input type="password" name="password" required
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none transition duration-200"
-                            placeholder="••••••••">
+                            placeholder="Password">
                         @error('password')
                             <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                         @enderror
@@ -102,40 +109,32 @@
                     <div class="mb-8">
                         <span class="block text-sm font-medium text-gray-700 mb-3">Pilih Role (Panduan Login)</span>
                         <div class="flex gap-3">
-                            <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="role_selector" class="peer sr-only" value="admin" checked>
-                                <div
-                                    class="rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all peer-checked:bg-red-50 peer-checked:border-red-100 peer-checked:text-red-700 flex flex-col items-center justify-center gap-1 group">
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-6 h-6 text-gray-400 group-hover:text-red-500 peer-checked:text-red-600"
-                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <path
-                                            d="M12 3l8 4.5l0 8.5a12 12 0 0 1 -8 8.5a12 12 0 0 1 -8 -8.5l0 -8.5l8 -4.5">
-                                        </path>
-                                    </svg>
-                                    <span
-                                        class="text-xs font-semibold text-gray-600 peer-checked:text-red-700">Admin</span>
-                                </div>
-                            </label>
+                            <div id="role-admin" onclick="selectRole('admin')"
+                                class="flex-1 cursor-pointer rounded-lg border-2 border-red-200 bg-red-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="w-6 h-6 text-red-500"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path
+                                        d="M12 3l8 4.5l0 8.5a12 12 0 0 1 -8 8.5a12 12 0 0 1 -8 -8.5l0 -8.5l8 -4.5">
+                                    </path>
+                                </svg>
+                                <span class="text-xs font-semibold text-red-700">Admin</span>
+                            </div>
 
-                            <label class="flex-1 cursor-pointer">
-                                <input type="radio" name="role_selector" class="peer sr-only" value="user">
-                                <div
-                                    class="rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all peer-checked:bg-blue-50 peer-checked:border-blue-100 peer-checked:text-blue-700 flex flex-col items-center justify-center gap-1 group">
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-6 h-6 text-gray-400 group-hover:text-blue-500 peer-checked:text-blue-600"
-                                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
-                                    </svg>
-                                    <span
-                                        class="text-xs font-semibold text-gray-600 peer-checked:text-blue-700">User</span>
-                                </div>
-                            </label>
+                            <div id="role-user" onclick="selectRole('user')"
+                                class="flex-1 cursor-pointer rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="w-6 h-6 text-gray-400"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                                </svg>
+                                <span class="text-xs font-semibold text-gray-600">User</span>
+                            </div>
                         </div>
                     </div>
 
@@ -143,16 +142,37 @@
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center gap-2">
                         Login
                     </button>
-
-                    <p class="text-center text-xs text-gray-400 mt-6 font-medium">
-                        View & Print - Lihat dan cetak <br>
-                        Demo: Hubungi administrator untuk kredensial.
-                    </p>
                 </form>
             </div>
         </div>
 
     </div>
+
+    <script>
+    function selectRole(role) {
+        const adminEl = document.getElementById('role-admin');
+        const userEl = document.getElementById('role-user');
+        document.getElementById('role_input').value = role;
+
+        if (role === 'admin') {
+            adminEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-red-200 bg-red-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
+            adminEl.querySelector('svg').className = 'w-6 h-6 text-red-500';
+            adminEl.querySelector('span').className = 'text-xs font-semibold text-red-700';
+
+            userEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
+            userEl.querySelector('svg').className = 'w-6 h-6 text-gray-400';
+            userEl.querySelector('span').className = 'text-xs font-semibold text-gray-600';
+        } else {
+            userEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-blue-200 bg-blue-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
+            userEl.querySelector('svg').className = 'w-6 h-6 text-blue-500';
+            userEl.querySelector('span').className = 'text-xs font-semibold text-blue-700';
+
+            adminEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
+            adminEl.querySelector('svg').className = 'w-6 h-6 text-gray-400';
+            adminEl.querySelector('span').className = 'text-xs font-semibold text-gray-600';
+        }
+    }
+    </script>
 
 </body>
 

@@ -14,21 +14,11 @@ use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
     public function register()
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function boot()
     {
         Fortify::createUsersUsing(CreateNewUser::class);
@@ -38,7 +28,6 @@ class FortifyServiceProvider extends ServiceProvider
 
         RateLimiter::for('login', function (Request $request) {
             $email = (string) $request->email;
-
             return Limit::perMinute(5)->by($email.$request->ip());
         });
 
@@ -52,6 +41,29 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::registerView(function(){
             return view('auth.register');
+        });
+
+        // Custom authentication: validate role selection matches actual user role
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = \App\Models\User::where('email', $request->email)->first();
+
+            if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                $selectedRole = $request->input('role_selector', 'admin');
+
+                if ($selectedRole === 'admin' && $user->hasRole(['Admin', 'Super Admin'])) {
+                    return $user;
+                }
+
+                if ($selectedRole === 'user' && $user->hasRole('Customer')) {
+                    return $user;
+                }
+
+                // Role mismatch - reject login
+                session()->flash('role_error', 'Username atau password salah.');
+                return null;
+            }
+
+            return null;
         });
     }
 }
