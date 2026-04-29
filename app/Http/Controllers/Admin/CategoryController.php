@@ -37,12 +37,14 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-        $image = $this->uploadImage($request, $path = 'public/categories/', $name = 'image');
+        $data = ['name' => $request->name];
 
-        Category::create([
-            'name' => $request->name,
-            'image' => $image->hashName(),
-        ]);
+        if ($request->hasFile('image')) {
+            $image = $this->uploadImage($request, $path = 'public/categories/', $name = 'image');
+            $data['image'] = $image->hashName();
+        }
+
+        Category::create($data);
 
         return back()->with('toast_success', 'Kategori Berhasil Ditambahkan');
     }

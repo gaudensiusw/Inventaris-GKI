@@ -35,6 +35,18 @@
                 </a>
             </li>
             <li class="sidebar-menu-item">
+                <a href="{{ route('admin.category.index') }}" class="{{ Route::is('admin.category.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4h6v6h-6z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6h-6z"/><path d="M17 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/></svg>
+                    Kategori
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="{{ route('admin.room.index') }}" class="{{ Route::is('admin.room.*') ? 'active' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0"/><path d="M5 21v-14l8 -4v18"/><path d="M19 21v-10l-6 -4"/><path d="M9 9l0 .01"/><path d="M9 12l0 .01"/><path d="M9 15l0 .01"/></svg>
+                    Ruangan
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
                 <a href="{{ route('admin.qr-scanner') }}" class="{{ Route::is('admin.qr-scanner') ? 'active' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="2" height="2"/><path d="M20 14v2h-2"/><path d="M14 20h2v-2"/><path d="M20 20v-2h-2"/></svg>
                     QR Scanner

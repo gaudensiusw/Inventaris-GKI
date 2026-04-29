@@ -44,6 +44,7 @@
                 <th>Kondisi</th>
                 <th>Lokasi</th>
                 <th>Jumlah</th>
+                <th>Satuan</th>
                 <th>Harga</th>
                 <th>Aksi</th>
             </tr>
@@ -101,10 +102,11 @@
                         @endif
                     </div>
                 </td>
+                <td>{{ $item->unit ? ucfirst($item->unit) : '-' }}</td>
                 <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                 <td>
                     <div style="display:flex;gap:4px;">
-                        <a href="{{ route('admin.item.barcode', $item) }}" class="btn btn-icon btn-outline btn-sm" title="Barcode">
+                        <a href="{{ route('admin.item.barcode', $item) }}" class="btn btn-icon btn-outline btn-sm" title="QR Code">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/></svg>
                         </a>
                         <a href="{{ route('admin.item.edit', $item) }}" class="btn btn-icon btn-outline btn-sm" title="Edit">
@@ -119,7 +121,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7">
+                <td colspan="8">
                     <div class="empty-state">
                         <p>Belum ada barang</p>
                         <span>Tambahkan barang inventaris baru</span>

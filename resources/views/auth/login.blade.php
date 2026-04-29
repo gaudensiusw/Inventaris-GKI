@@ -78,7 +78,6 @@
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-                    <input type="hidden" name="role_selector" id="role_input" value="admin">
 
                     @if(session('role_error'))
                         <div class="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-4">
@@ -106,38 +105,6 @@
                         @enderror
                     </div>
 
-                    <div class="mb-8">
-                        <span class="block text-sm font-medium text-gray-700 mb-3">Pilih Role (Panduan Login)</span>
-                        <div class="flex gap-3">
-                            <div id="role-admin" onclick="selectRole('admin')"
-                                class="flex-1 cursor-pointer rounded-lg border-2 border-red-200 bg-red-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="w-6 h-6 text-red-500"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <path
-                                        d="M12 3l8 4.5l0 8.5a12 12 0 0 1 -8 8.5a12 12 0 0 1 -8 -8.5l0 -8.5l8 -4.5">
-                                    </path>
-                                </svg>
-                                <span class="text-xs font-semibold text-red-700">Admin</span>
-                            </div>
-
-                            <div id="role-user" onclick="selectRole('user')"
-                                class="flex-1 cursor-pointer rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="w-6 h-6 text-gray-400"
-                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
-                                </svg>
-                                <span class="text-xs font-semibold text-gray-600">User</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <button type="submit"
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center gap-2">
                         Login
@@ -147,32 +114,6 @@
         </div>
 
     </div>
-
-    <script>
-    function selectRole(role) {
-        const adminEl = document.getElementById('role-admin');
-        const userEl = document.getElementById('role-user');
-        document.getElementById('role_input').value = role;
-
-        if (role === 'admin') {
-            adminEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-red-200 bg-red-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
-            adminEl.querySelector('svg').className = 'w-6 h-6 text-red-500';
-            adminEl.querySelector('span').className = 'text-xs font-semibold text-red-700';
-
-            userEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
-            userEl.querySelector('svg').className = 'w-6 h-6 text-gray-400';
-            userEl.querySelector('span').className = 'text-xs font-semibold text-gray-600';
-        } else {
-            userEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-blue-200 bg-blue-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
-            userEl.querySelector('svg').className = 'w-6 h-6 text-blue-500';
-            userEl.querySelector('span').className = 'text-xs font-semibold text-blue-700';
-
-            adminEl.className = 'flex-1 cursor-pointer rounded-lg border-2 border-transparent bg-gray-50 p-3 text-center transition-all flex flex-col items-center justify-center gap-1';
-            adminEl.querySelector('svg').className = 'w-6 h-6 text-gray-400';
-            adminEl.querySelector('span').className = 'text-xs font-semibold text-gray-600';
-        }
-    }
-    </script>
 
 </body>
 
