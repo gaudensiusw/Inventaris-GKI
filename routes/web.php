@@ -13,21 +13,23 @@ use App\Http\Controllers\Customer\{
     DashboardController as CustomerDashboardController, OrderController as CustomerOrderController, RentController as CustomerRentController,
     SettingController as CustomerSettingController
 };
+use App\Http\Controllers\PublicInventoryController;
 use Illuminate\Support\Facades\Route;
 
+// Public routes (no login required)
 Route::get('/', function () {
-    return redirect()->to(url('/login'));
+    return redirect()->to(url('/inventaris'));
 });
+
+Route::get('/inventaris', [PublicInventoryController::class, 'index'])->name('public.inventory');
 
 Route::get('/home', function () {
     if (auth()->check()) {
         if (auth()->user()->hasRole(['Admin', 'Super Admin'])) {
             return redirect()->route('admin.dashboard');
-        } else {
-            return redirect()->route('customer.dashboard');
         }
     }
-    return redirect('/login');
+    return redirect()->to(url('/inventaris'));
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:Admin|Super Admin']], function () {
@@ -57,6 +59,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'r
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
 
     // Laporan
+    Route::get('/report/export-pdf', [ReportController::class, 'exportPdf'])->name('report.export-pdf');
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
 
     // Pengguna

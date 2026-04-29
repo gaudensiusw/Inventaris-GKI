@@ -8,7 +8,6 @@ use App\Models\Item;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class ItemController extends Controller
 {
@@ -100,8 +99,7 @@ class ItemController extends Controller
 
     public function barcode(Item $item)
     {
-        $generator = new BarcodeGeneratorPNG();
-        $barcode = base64_encode($generator->getBarcode($item->barcode, $generator::TYPE_CODE_128));
-        return view('admin.item.barcode', compact('item', 'barcode'));
+        return view('admin.item.qrcode', compact('item'));
     }
 }
+

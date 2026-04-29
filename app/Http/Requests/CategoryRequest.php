@@ -26,7 +26,7 @@ class CategoryRequest extends FormRequest
         if(request()->isMethod('POST')){
             $data = [
                 'name' => 'required|unique:categories',
-                'image' => 'required|mimes:png,jpg,jpeg|max:2048',
+                'image' => 'nullable|mimes:png,jpg,jpeg|max:2048',
             ];
         }elseif(request()->isMethod('PUT')){
             $data = [
