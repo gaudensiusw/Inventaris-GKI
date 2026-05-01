@@ -12,7 +12,7 @@ class SpecialStatusController extends Controller
     {
         $tab = $request->get('tab', 'hilang');
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
+        $perPage = min((int) $request->get('per_page', 10), 100);
         
         $stats = [
             'hilang' => Item::sum('qty_hilang'),
@@ -31,8 +31,10 @@ class SpecialStatusController extends Controller
         }
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('kode_aset', 'like', "%{$search}%");
+            });
         }
 
         $items = $query->with(['category', 'room'])->paginate($perPage)->withQueryString();

@@ -95,7 +95,7 @@
                                 <div class="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
                                     <i data-lucide="package" class="w-4 h-4"></i>
                                 </div>
-                                <span class="text-sm font-medium text-slate-600">{{ $borrow->item->name }}</span>
+                                <span class="text-sm font-medium text-slate-600">{{ $borrow->item->name ?? 'Barang Terhapus' }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-center">
@@ -144,8 +144,11 @@
 </div>
 
 <!-- Modal Tambah Peminjaman -->
-<div id="addBorrowModal" class="modal-backdrop hidden flex items-center justify-center z-[100]">
-    <div class="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="addBorrowModalContent">
+<div id="addBorrowModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('addBorrowModal')"></div>
+    
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="addBorrowModalContent">
         <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
             <h2 class="text-xl font-black text-slate-800 tracking-tight">Catat Peminjaman Baru</h2>
             <button onclick="closeModal('addBorrowModal')" class="p-2 hover:bg-white rounded-xl transition-all">
@@ -211,6 +214,7 @@
             </div>
         </form>
     </div>
+</div>
 </div>
 
 <script>

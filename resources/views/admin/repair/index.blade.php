@@ -81,7 +81,7 @@
                                     <i data-lucide="package" class="w-4 h-4"></i>
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-slate-700">{{ $repair->item->name }}</span>
+                                    <span class="text-sm font-bold text-slate-700">{{ $repair->item->name ?? 'Barang Terhapus' }}</span>
                                     <span class="text-[10px] text-slate-400 uppercase font-medium tracking-tight">{{ $repair->item->kode_aset ?? '-' }}</span>
                                 </div>
                             </div>
@@ -137,8 +137,11 @@
 </div>
 
 <!-- Modal Tambah Perbaikan -->
-<div id="addRepairModal" class="modal-backdrop hidden flex items-center justify-center z-[100]">
-    <div class="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="addRepairModalContent">
+<div id="addRepairModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('addRepairModal')"></div>
+    
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative bg-white rounded-[40px] w-full max-w-2xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="addRepairModalContent">
         <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
             <h2 class="text-xl font-black text-slate-800 tracking-tight">Catat Perbaikan Baru</h2>
             <button onclick="closeModal('addRepairModal')" class="p-2 hover:bg-white rounded-xl transition-all">
@@ -204,6 +207,7 @@
             </div>
         </form>
     </div>
+</div>
 </div>
 
 <script>

@@ -28,6 +28,6 @@ class StockOpnameDetail extends Model
 
     public function item()
     {
-        return $this->belongsTo(Item::class, 'id_barang', 'id');
+        return $this->belongsTo(Item::class, 'id_barang', 'id')->withTrashed();
     }
 }

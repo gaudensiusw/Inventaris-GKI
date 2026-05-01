@@ -8,6 +8,7 @@ use App\Models\StockOpnameDetail;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class StockOpnameController extends Controller
@@ -24,8 +25,10 @@ class StockOpnameController extends Controller
         $query = Item::with(['category', 'room']);
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('kode_aset', 'like', "%{$search}%");
+            });
         }
 
         $items = $query->get(); // We still get all for the form, but we'll add JS search too
@@ -46,7 +49,7 @@ class StockOpnameController extends Controller
         try {
             $header = StockOpnameHeader::create([
                 'tgl_audit' => $request->audit_date,
-                'id_user' => auth()->id() ?: 1,
+                'id_user' => auth()->id(),
                 'status' => 'Completed',
                 'keterangan' => $request->notes
             ]);
@@ -80,7 +83,8 @@ class StockOpnameController extends Controller
             return redirect()->route('stock-opname.index')->with('success', 'Stock Opname berhasil disimpan!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            Log::error('Gagal simpan stock opname: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan audit. Silakan coba lagi.');
         }
     }
 

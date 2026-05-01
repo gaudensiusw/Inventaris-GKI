@@ -21,14 +21,14 @@ class Item extends Model
         'room_id',
         'merk_model',
         'spesifikasi',
-        'quantity', // This is total_qty in new project
+        'quantity',
         'unit',
         'qty_baik',
         'qty_rusak_ringan',
         'qty_rusak_berat',
         'qty_tersedia',
         'qty_dipinjam',
-        'qty_diperbaiki', // This was qty_perbaikan
+        'qty_diperbaiki',
         'qty_hilang',
         'qty_tidak_digunakan',
         'qty_pengadaan',
@@ -38,8 +38,13 @@ class Item extends Model
         'purchase_date',
         'description',
         'keterangan',
-        'unit',
         'is_write_off'
+    ];
+
+    protected $casts = [
+        'purchase_date' => 'date',
+        'price' => 'decimal:2',
+        'is_write_off' => 'boolean',
     ];
 
     public function category()

@@ -7,6 +7,7 @@ use App\Models\Repair;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class RepairController extends Controller
@@ -14,7 +15,7 @@ class RepairController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
+        $perPage = min((int) $request->get('per_page', 10), 100);
         
         $stats = [
             'total_repair' => Repair::where('status', '!=', 'Selesai')->count(),
@@ -32,7 +33,7 @@ class RepairController extends Controller
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->whereHas('item', function($sq) use ($search) {
-                    $sq->where('name', 'like', "%{$search}%");
+                    $sq->withTrashed()->where('name', 'like', "%{$search}%");
                 });
             });
         }
@@ -65,7 +66,7 @@ class RepairController extends Controller
             DB::beginTransaction();
 
             $validated['status'] = 'Proses';
-            $validated['id_user'] = auth()->id() ?? 1;
+            $validated['id_user'] = auth()->id();
             
             Repair::create($validated);
 
@@ -76,7 +77,8 @@ class RepairController extends Controller
             return redirect()->route('repair.index')->with('success', 'Data perbaikan berhasil dicatat!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal mencatat perbaikan: ' . $e->getMessage())->withInput();
+            Log::error('Gagal mencatat perbaikan: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return back()->with('error', 'Gagal mencatat perbaikan. Silakan coba lagi.')->withInput();
         }
     }
 
@@ -96,7 +98,8 @@ class RepairController extends Controller
             return redirect()->back()->with('success', 'Perbaikan berhasil diselesaikan!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menyelesaikan perbaikan: ' . $e->getMessage());
+            Log::error('Gagal selesaikan perbaikan: ' . $e->getMessage(), ['id' => $id]);
+            return back()->with('error', 'Gagal menyelesaikan perbaikan. Silakan coba lagi.');
         }
     }
 }

@@ -16,19 +16,20 @@ class QrScannerController extends Controller
 
     public function search(Request $request)
     {
+        $request->validate(['code' => 'required|string|max:50']);
         $code = $request->code;
-        $item = Item::where('item_id', $code)->first();
+        $item = Item::where('kode_aset', $code)->orWhere('item_id', $code)->first();
 
         if ($item) {
             return response()->json([
                 'success' => true,
-                'redirect_url' => route('inventory.index', ['search' => $item->item_id]) // Redirect to inventory with search or a detail page
+                'redirect_url' => route('inventory.index', ['search' => $item->kode_aset])
             ]);
         }
 
         return response()->json([
             'success' => false,
-            'message' => 'Barang dengan kode ' . $code . ' tidak ditemukan.'
+            'message' => 'Barang dengan kode tersebut tidak ditemukan.'
         ]);
     }
 }

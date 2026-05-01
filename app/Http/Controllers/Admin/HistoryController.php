@@ -11,7 +11,7 @@ class HistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->get('per_page', 10);
+        $perPage = min((int) $request->get('per_page', 10), 100);
         
         // History of Borrowings (Returned)
         $borrowHistory = Borrowing::with('item')

@@ -27,6 +27,6 @@ class Borrowing extends Model
 
     public function item()
     {
-        return $this->belongsTo(Item::class, 'id_barang');
+        return $this->belongsTo(Item::class, 'id_barang')->withTrashed();
     }
 }

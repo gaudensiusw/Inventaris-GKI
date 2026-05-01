@@ -60,8 +60,8 @@
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4">
                             <div class="flex flex-col">
-                                <span class="text-sm font-bold text-slate-700">{{ $detail->item->name }}</span>
-                                <span class="text-[10px] text-slate-400">{{ $detail->item->kode_aset }}</span>
+                                <span class="text-sm font-bold text-slate-700">{{ $detail->item->name ?? 'Barang Terhapus' }}</span>
+                                <span class="text-[10px] text-slate-400">{{ $detail->item->kode_aset ?? '-' }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">

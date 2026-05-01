@@ -191,9 +191,9 @@
     new Chart(categoryCtx, {
         type: 'pie',
         data: {
-            labels: {!! json_encode($categoryData->pluck('name')) !!},
+            labels: @json($categoryData->pluck('name')),
             datasets: [{
-                data: {!! json_encode($categoryData->pluck('count')) !!},
+                data: @json($categoryData->pluck('count')),
                 backgroundColor: [
                     '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#64748b'
                 ],
@@ -221,10 +221,10 @@
     new Chart(locationCtx, {
         type: 'bar',
         data: {
-            labels: {!! json_encode($locationData->pluck('name')) !!},
+            labels: @json($locationData->pluck('name')),
             datasets: [{
                 label: 'Jumlah Barang',
-                data: {!! json_encode($locationData->pluck('count')) !!},
+                data: @json($locationData->pluck('count')),
                 backgroundColor: '#3b82f6',
                 borderRadius: 12,
                 barThickness: 40

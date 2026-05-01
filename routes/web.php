@@ -30,7 +30,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/inventory/create', [ItemController::class, 'create'])->name('inventory.create');
     Route::post('/inventory/store', [ItemController::class, 'store'])->name('inventory.store');
     Route::get('/inventory/export', [ItemController::class, 'exportCsv'])->name('inventory.export');
-    Route::get('/inventory/{id}', [ItemController::class, 'show'])->name('inventory.show');
     Route::delete('/inventory/{id}', [ItemController::class, 'destroy'])->name('inventory.destroy');
     Route::put('/inventory/{id}', [ItemController::class, 'update'])->name('inventory.update');
     

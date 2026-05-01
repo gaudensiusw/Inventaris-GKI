@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
@@ -15,7 +16,7 @@ class ItemController extends Controller
     {
         $search = $request->get('search');
         $categoryId = $request->get('category_id');
-        $perPage = $request->get('per_page', 10);
+        $perPage = min((int) $request->get('per_page', 10), 100);
 
         $query = Item::with(['category', 'room']);
 
@@ -61,7 +62,7 @@ class ItemController extends Controller
 
         try {
             // Generate metadata
-            $count = Item::count() + 1;
+            $count = (Item::withTrashed()->max('id') ?? 0) + 1;
             $validated['kode_aset'] = 'INV-' . str_pad($count, 3, '0', STR_PAD_LEFT);
             $validated['slug'] = Str::slug($validated['name']) . '-' . time();
             
@@ -82,16 +83,12 @@ class ItemController extends Controller
 
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil ditambahkan!');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal simpan barang: ' . $e->getMessage());
-            return back()->with('error', 'Gagal menambahkan barang: ' . $e->getMessage())->withInput();
+            Log::error('Gagal simpan barang: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return back()->with('error', 'Gagal menambahkan barang. Silakan periksa kembali data yang diinput.')->withInput();
         }
     }
 
-    public function show($id)
-    {
-        $item = Item::with(['category', 'room'])->findOrFail($id);
-        return view('admin.inventory.show', compact('item'));
-    }
+    // Method show() dihapus — detail barang ditampilkan via modal popup di halaman index.
 
     public function exportCsv()
     {
@@ -133,7 +130,8 @@ class ItemController extends Controller
             
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil dipindahkan ke daftar penghapusan.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus barang: ' . $e->getMessage());
+            Log::error('Gagal hapus barang: ' . $e->getMessage(), ['id' => $id]);
+            return back()->with('error', 'Gagal menghapus barang. Silakan coba lagi.');
         }
     }
 
@@ -170,7 +168,8 @@ class ItemController extends Controller
 
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil diperbarui!');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui barang: ' . $e->getMessage())
+            Log::error('Gagal update barang: ' . $e->getMessage(), ['id' => $id]);
+            return back()->with('error', 'Gagal memperbarui barang. Silakan periksa kembali data yang diinput.')
                         ->with('is_edit', true)
                         ->with('edit_item_id', $id)
                         ->withInput();

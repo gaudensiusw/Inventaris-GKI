@@ -7,6 +7,7 @@ use App\Models\Borrowing;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class BorrowingController extends Controller
@@ -14,7 +15,7 @@ class BorrowingController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
+        $perPage = min((int) $request->get('per_page', 10), 100);
         
         $stats = [
             'total_rows' => Borrowing::where('status_pinjam', 'Dipinjam')->count(),
@@ -32,7 +33,7 @@ class BorrowingController extends Controller
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->whereHas('item', function($sq) use ($search) {
-                    $sq->where('name', 'like', "%{$search}%");
+                    $sq->withTrashed()->where('name', 'like', "%{$search}%");
                 })->orWhere('peminjam', 'like', "%{$search}%");
             });
         }
@@ -65,7 +66,7 @@ class BorrowingController extends Controller
             DB::beginTransaction();
 
             $validated['status_pinjam'] = 'Dipinjam';
-            $validated['id_user'] = auth()->id() ?? 1;
+            $validated['id_user'] = auth()->id();
             
             Borrowing::create($validated);
 
@@ -76,7 +77,8 @@ class BorrowingController extends Controller
             return redirect()->route('borrowing.index')->with('success', 'Peminjaman berhasil dicatat!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal mencatat peminjaman: ' . $e->getMessage())->withInput();
+            Log::error('Gagal mencatat peminjaman: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return back()->with('error', 'Gagal mencatat peminjaman. Silakan coba lagi.')->withInput();
         }
     }
 
@@ -99,7 +101,8 @@ class BorrowingController extends Controller
             return redirect()->back()->with('success', 'Barang berhasil dikembalikan!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal memproses pengembalian: ' . $e->getMessage());
+            Log::error('Gagal proses pengembalian: ' . $e->getMessage(), ['id' => $id]);
+            return back()->with('error', 'Gagal memproses pengembalian. Silakan coba lagi.');
         }
     }
 }

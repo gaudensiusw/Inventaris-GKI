@@ -23,9 +23,10 @@ class DashboardController extends Controller
                           ->count();
         
         // Perlu Perbaikan = Items where at least one unit is broken
-        $perluPerbaikan = Item::where('qty_rusak_ringan', '>', 0)
-                             ->orWhere('qty_rusak_berat', '>', 0)
-                             ->count();
+        $perluPerbaikan = Item::where(function($q) {
+            $q->where('qty_rusak_ringan', '>', 0)
+              ->orWhere('qty_rusak_berat', '>', 0);
+        })->count();
         
         $totalCategories = Category::count();
         $totalUniqueItems = $totalItems; // Same as totalItems in this context
