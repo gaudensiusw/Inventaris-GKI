@@ -15,9 +15,21 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        Role::create(['name' => 'Super Admin']);
+        // Reset cached roles and permissions (Biar tidak nyangkut)
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // 1. Role Super Admin
+        Role::updateOrCreate(
+            ['name' => 'Super Admin'],
+            ['guard_name' => 'web']
+        );
         
-        $admin = Role::create(['name' => 'Admin']);
+        // 2. Role Admin
+        $admin = Role::updateOrCreate(
+            ['name' => 'Admin'],
+            ['guard_name' => 'web']
+        );
+
         $adminPermissions = Permission::whereIn('name', [
             'index-dashboard',
             'index-item', 'create-item', 'update-item',
@@ -26,12 +38,17 @@ class RoleSeeder extends Seeder
             'index-order', 'update-order',
             'index-rent', 'update-rent',
         ])->get();
-        $admin->givePermissionTo($adminPermissions);
+        $admin->syncPermissions($adminPermissions); // Pakai sync agar tidak duplikat
 
-        $customer = Role::create(['name' => 'Customer']);
+        // 3. Role Customer (Mungkin untuk jemaat yang mau pinjam barang)
+        $customer = Role::updateOrCreate(
+            ['name' => 'Customer'],
+            ['guard_name' => 'web']
+        );
+
         $customerPermissions = Permission::whereIn('name', [
             'index-order', 'create-order', 'index-rent', 'create-rent'
         ])->get();
-        $customer->givePermissionTo($customerPermissions);
+        $customer->syncPermissions($customerPermissions);
     }
 }

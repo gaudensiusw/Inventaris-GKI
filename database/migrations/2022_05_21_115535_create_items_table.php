@@ -14,21 +14,32 @@ return new class extends Migration
     public function up()
     {
         Schema::create('items', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('room_id');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->string('barcode')->unique();
-            $table->enum('condition', ['Baik', 'Rusak ringan', 'Rusak berat'])->default('Baik');
-            $table->enum('status', ['Tersedia', 'Dipinjam', 'Sedang diperbaiki', 'Hilang', 'Tidak digunakan', 'Dalam pengadaan'])->default('Tersedia');
-            $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->timestamps();
-
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
-        });
+    $table->id();
+    $table->string('entno', 50)->nullable();
+    $table->string('kode_aset', 50)->nullable();
+    $table->string('barcode')->nullable();
+    $table->string('name', 200);
+    $table->string('gambar_barang')->nullable();
+    $table->foreignId('category_id')->constrained('categories');
+    $table->foreignId('room_id')->constrained('rooms');
+    $table->string('merk_model', 150)->nullable();
+    $table->text('spesifikasi')->nullable();
+    $table->integer('quantity')->default(0);
+    $table->integer('qty_diperbaiki')->default(0);
+    $table->integer('qty_dipinjam')->default(0);
+    $table->string('satuan', 20)->nullable(); // Ini 'unit' yang kamu tambahkan kemarin
+    $table->enum('condition', ['Bagus', 'Rusak Ringan', 'Rusak Berat']);
+    $table->text('keterangan')->nullable();
+    $table->string('sumber_dana', 100)->nullable();
+    $table->date('tgl_perolehan')->nullable();
+    $table->decimal('price', 15, 2)->default(0);
+    $table->date('tgl_habis_garansi')->nullable();
+    $table->string('supplier', 150)->nullable();
+    $table->string('area', 100)->nullable();
+    $table->boolean('is_write_off')->default(false);
+    $table->string('status', 50)->nullable();
+    $table->timestamps();
+});
     }
 
     /**

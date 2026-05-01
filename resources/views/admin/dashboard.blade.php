@@ -78,7 +78,7 @@
             </div>
             <div class="activity-info">
                 <div class="activity-title">{{ $item->name }}</div>
-                <div class="activity-desc">Diperbarui oleh Admin · {{ $item->updated_at->format('Y-m-d') }}</div>
+                <div class="activity-desc">Diperbarui oleh Admin · {{ $item->updated_at?->format('Y-m-d') ?? '-' }}</div>
             </div>
             <svg class="activity-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>
         </li>

@@ -16,7 +16,6 @@ use App\Http\Controllers\Customer\{
 use App\Http\Controllers\PublicInventoryController;
 use Illuminate\Support\Facades\Route;
 
-// Public routes (no login required)
 Route::get('/', function () {
     return redirect()->to(url('/inventaris'));
 });

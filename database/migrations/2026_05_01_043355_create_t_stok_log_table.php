@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rooms', function (Blueprint $table) {
-    $table->id();
-    $table->string('name', 100);
-    $table->string('penanggung_jawab', 100);
-    $table->timestamps();
+        Schema::create('t_stok_log', function (Blueprint $table) {
+    $table->id('id_log');
+    $table->foreignId('id_barang')->constrained('items');
+    $table->enum('tipe_transaksi', ['Masuk', 'Keluar', 'Penyesuaian']);
+    $table->integer('jumlah');
+    $table->text('keterangan')->nullable();
+    $table->timestamp('tgl_log')->useCurrent();
 });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rooms');
+        Schema::dropIfExists('t_stok_log');
     }
 };

@@ -6,25 +6,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::create('repairs', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('item_id');
-            $table->string('repair_location')->nullable();
-            $table->date('repair_date');
+            $table->id(); // Sesuai ERD image_815f0a.jpg
+            $table->foreignId('id_barang')->constrained('items');
+            
+            // Mengarahkan ke tabel m_vendor dengan kolom primary key id_vendor
+            $table->foreignId('id_vendor')->constrained('m_vendor', 'id_vendor');
+            
+            $table->date('tgl_service');
+            $table->text('jenis_perbaikan');
+            $table->string('status', 50);
             $table->date('estimated_completion')->nullable();
-            $table->date('actual_completion')->nullable();
-            $table->text('notes')->nullable();
-            $table->enum('status', ['Dalam Perbaikan', 'Selesai'])->default('Dalam Perbaikan');
+            $table->decimal('biaya', 15, 2)->default(0);
+            $table->text('keterangan')->nullable();
             $table->timestamps();
-
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
+        // Menghapus tabel repairs jika migrasi di-rollback
         Schema::dropIfExists('repairs');
     }
 };

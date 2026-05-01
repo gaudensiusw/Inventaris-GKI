@@ -13,16 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rents', function (Blueprint $table) {
-    $table->id('id_pinjam');
+        Schema::create('t_penghapusan', function (Blueprint $table) {
+    $table->id('id_hapus');
     $table->foreignId('id_barang')->constrained('items');
-    $table->string('peminjam', 100);
-    $table->string('komisi_terkait', 100)->nullable();
-    $table->dateTime('tgl_pinjam');
-    $table->dateTime('tgl_kembali_rencana');
-    $table->dateTime('tgl_kembali_aktual')->nullable();
-    $table->enum('status_pinjam', ['Dipinjam', 'Kembali', 'Hilang/Rusak']);
-    $table->text('catatan')->nullable();
+    $table->date('tgl_hapus');
+    $table->enum('alasan', ['Rusak Total', 'Dijual', 'Dihibahkan', 'Hilang']);
+    $table->text('keterangan')->nullable();
     $table->timestamps();
 });
     }
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rents');
+        Schema::dropIfExists('t_penghapusan');
     }
 };
