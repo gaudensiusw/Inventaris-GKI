@@ -19,7 +19,7 @@
         <div class="card-premium p-6 border-none flex items-center justify-between group">
             <div>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Barang</p>
-                <h3 class="text-3xl font-black text-slate-800">{{ number_format($totalItems) }}</h3>
+                <h3 class="text-3xl font-black text-slate-800">{{ number_format($totalItems) }} <span class="text-sm font-bold text-slate-400">Jenis</span></h3>
                 <p class="text-[10px] text-blue-500 font-bold mt-1">+12% dari bulan lalu</p>
             </div>
             <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
@@ -29,7 +29,7 @@
         <div class="card-premium p-6 border-none flex items-center justify-between group">
             <div>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kondisi Baik</p>
-                <h3 class="text-3xl font-black text-emerald-600">{{ number_format($kondisiBaik) }}</h3>
+                <h3 class="text-3xl font-black text-emerald-600">{{ number_format($kondisiBaik) }} <span class="text-sm font-bold text-emerald-400">Jenis</span></h3>
                 <p class="text-[10px] text-emerald-500 font-bold mt-1">{{ round(($kondisiBaik / max(1, $totalItems)) * 100) }}% dari total</p>
             </div>
             <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
@@ -39,8 +39,10 @@
         <div class="card-premium p-6 border-none flex items-center justify-between group">
             <div>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Perlu Perbaikan</p>
-                <h3 class="text-3xl font-black text-orange-500">{{ number_format($perluPerbaikan) }}</h3>
-                <p class="text-[10px] text-orange-500 font-bold mt-1">Perhatian diperlukan</p>
+                <h3 class="text-3xl font-black text-orange-500">{{ number_format($perluPerbaikan) }} <span class="text-sm font-bold text-orange-400">Jenis</span></h3>
+                <p class="text-[10px] {{ $perluPerbaikan > 0 ? 'text-orange-500' : 'text-slate-400' }} font-bold mt-1">
+                    {{ $perluPerbaikan > 0 ? 'Perhatian diperlukan' : 'Semua unit aman' }}
+                </p>
             </div>
             <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center">
                 <i data-lucide="alert-triangle" class="w-6 h-6"></i>

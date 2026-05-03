@@ -14,10 +14,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Based on User Request: Use count of unique items (rows) as the primary metric
+        // Reverting to item counts (unique records) as per user request
         $totalItems = Item::count();
         
-        // Kondisi Baik = Items where no units are broken
+        // Kondisi Baik = Items where no units are broken (Item-level metric)
         $kondisiBaik = Item::where('qty_rusak_ringan', 0)
                           ->where('qty_rusak_berat', 0)
                           ->count();
@@ -29,7 +29,7 @@ class DashboardController extends Controller
         })->count();
         
         $totalCategories = Category::count();
-        $totalUniqueItems = $totalItems; // Same as totalItems in this context
+        $totalUniqueItems = $totalItems;
         
         $kondisiBaikPercent = $totalItems > 0 ? round(($kondisiBaik / $totalItems) * 100) : 0;
 

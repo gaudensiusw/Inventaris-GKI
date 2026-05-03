@@ -39,7 +39,7 @@ class BorrowingController extends Controller
         }
 
         $borrowings = $query->paginate($perPage)->withQueryString();
-        $items = Item::where('qty_tersedia', '>', 0)->get();
+        $items = Item::orderBy('name')->get();
         
         return view('admin.borrowing.index', compact('borrowings', 'search', 'perPage', 'stats', 'items'));
     }

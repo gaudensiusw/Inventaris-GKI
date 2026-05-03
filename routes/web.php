@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\QrScannerController;
+use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/inventory/export', [ItemController::class, 'exportCsv'])->name('inventory.export');
     Route::delete('/inventory/{id}', [ItemController::class, 'destroy'])->name('inventory.destroy');
     Route::put('/inventory/{id}', [ItemController::class, 'update'])->name('inventory.update');
+    
+    Route::get('/room', [RoomController::class, 'index'])->name('room.index');
+    Route::post('/room', [RoomController::class, 'store'])->name('room.store');
+    Route::put('/room/{id}', [RoomController::class, 'update'])->name('room.update');
+    Route::delete('/room/{id}', [RoomController::class, 'destroy'])->name('room.destroy');
     
     Route::get('/stock-opname', [StockOpnameController::class, 'index'])->name('stock-opname.index');
     Route::get('/stock-opname/create', [StockOpnameController::class, 'create'])->name('stock-opname.create');

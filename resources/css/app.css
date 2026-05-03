@@ -12,10 +12,10 @@
     /* Custom Colors from Screenshot Design */
     --color-primary: #3b82f6;
     --color-primary-dark: #2563eb;
-    --color-sidebar-bg: #ffffff;
-    --color-sidebar-text: #64748b;
+    --color-sidebar-bg: #0f172a; /* Biru Tua / Slate 900 */
+    --color-sidebar-text: #94a3b8; /* Slate 400 */
     --color-sidebar-active: #3b82f6;
-    --color-sidebar-hover: #f1f5f9;
+    --color-sidebar-hover: #1e293b; /* Slate 800 */
     --color-content-bg: #f8fafc;
     --color-border-subtle: #f1f5f9;
     
@@ -33,7 +33,7 @@
 /* Custom Component Classes (The "Design System") */
 @layer components {
     .sidebar-active {
-        @apply bg-[--color-sidebar-active]/10 text-[--color-sidebar-active] font-semibold;
+        @apply bg-blue-600/20 text-blue-400 font-semibold;
     }
     
     .card-premium {

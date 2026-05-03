@@ -16,11 +16,32 @@
     <!-- Lucide Icons (pinned version) -->
     <script src="https://unpkg.com/lucide@0.344.0"></script>
     
+    <!-- Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+        /* Tom Select Custom Styling */
+        .ts-control {
+            @apply !bg-slate-50 !border-slate-200 !rounded-2xl !px-4 !py-3 !text-sm !font-medium !shadow-none !transition-all;
+        }
+        .ts-control:focus {
+            @apply !ring-4 !ring-blue-50 !border-blue-400;
+        }
+        .ts-dropdown {
+            @apply !rounded-2xl !mt-2 !border-slate-100 !shadow-2xl !shadow-slate-200/50 !p-2 !z-[1000];
+        }
+        .ts-dropdown .active {
+            @apply !bg-blue-50 !text-blue-600 !rounded-xl;
+        }
+        .ts-dropdown .option {
+            @apply !px-4 !py-2.5 !text-sm !font-medium !text-slate-600 !rounded-xl;
+        }
     </style>
 
     <script>

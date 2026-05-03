@@ -57,6 +57,12 @@
                     <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                 @endforeach
             </select>
+            <select onchange="window.location.href = addQueryParam('room_id', this.value)" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none transition-all shadow-sm min-w-[150px]">
+                <option value="">Semua Lokasi</option>
+                @foreach($rooms as $room)
+                    <option value="{{ $room->id }}" {{ $roomId == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                @endforeach
+            </select>
             <a href="{{ route('inventory.export') }}" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
                 <i data-lucide="download" class="w-4 h-4"></i>
                 <span>Export</span>

@@ -160,11 +160,13 @@
             <div class="flex flex-col gap-6">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-bold text-slate-500 ml-1">Pilih Barang <span class="text-red-500">*</span></label>
-                    <select name="id_barang" required onchange="updateStockLabel(this)"
+                    <select id="item_select" name="id_barang" required
                         class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
-                        <option value="">Pilih Barang</option>
+                        <option value="">Cari Barang...</option>
                         @foreach($items as $item)
-                            <option value="{{ $item->id }}" data-stock="{{ $item->qty_tersedia }}">{{ $item->name }} (Tersedia: {{ $item->qty_tersedia }})</option>
+                            <option value="{{ $item->id }}" data-stock="{{ $item->qty_tersedia }}" {{ $item->qty_tersedia <= 0 ? 'disabled' : '' }}>
+                                {{ $item->name }} {{ $item->qty_tersedia <= 0 ? '(Stok Habis)' : '(Tersedia: '.$item->qty_tersedia.')' }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -179,6 +181,7 @@
                         <label class="text-xs font-bold text-slate-500 ml-1">Jumlah Pinjam <span class="text-red-500">*</span></label>
                         <input type="number" name="qty" required min="1" value="1" id="borrow_qty"
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-bold text-blue-600">
+                        <p id="stock_hint" class="text-[10px] font-bold text-slate-400 mt-1 ml-1">Pilih barang untuk melihat stok tersedia</p>
                     </div>
                 </div>
 
@@ -218,14 +221,35 @@
 </div>
 
 <script>
-    function updateStockLabel(select) {
-        const option = select.options[select.selectedIndex];
-        const stock = option.getAttribute('data-stock');
-        const qtyInput = document.getElementById('borrow_qty');
-        if (stock) {
-            qtyInput.max = stock;
-        }
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const itemSelect = new TomSelect('#item_select', {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+
+        itemSelect.on('change', (value) => {
+            const option = itemSelect.options[value];
+            const stock = option ? parseInt(option.getAttribute('data-stock')) : 0;
+            const qtyInput = document.getElementById('borrow_qty');
+            const stockHint = document.getElementById('stock_hint');
+            
+            if (value) {
+                qtyInput.max = stock;
+                stockHint.innerText = `Maksimal pinjam: ${stock} unit`;
+                stockHint.classList.replace('text-slate-400', 'text-blue-500');
+                if (parseInt(qtyInput.value) > stock) {
+                    qtyInput.value = stock;
+                }
+            } else {
+                qtyInput.removeAttribute('max');
+                stockHint.innerText = 'Pilih barang untuk melihat stok tersedia';
+                stockHint.classList.replace('text-blue-500', 'text-slate-400');
+            }
+        });
+    });
 
     function openModal(id) {
         const modal = document.getElementById(id);

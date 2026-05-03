@@ -16,6 +16,7 @@ class ItemController extends Controller
     {
         $search = $request->get('search');
         $categoryId = $request->get('category_id');
+        $roomId = $request->get('room_id');
         $perPage = min((int) $request->get('per_page', 10), 100);
 
         $query = Item::with(['category', 'room']);
@@ -32,11 +33,15 @@ class ItemController extends Controller
             $query->where('category_id', $categoryId);
         }
 
+        if ($roomId) {
+            $query->where('room_id', $roomId);
+        }
+
         $items = $query->latest()->paginate($perPage)->withQueryString();
         $categories = Category::all();
         $rooms = Room::all();
 
-        return view('admin.inventory.index', compact('items', 'categories', 'rooms', 'perPage', 'search', 'categoryId'));
+        return view('admin.inventory.index', compact('items', 'categories', 'rooms', 'perPage', 'search', 'categoryId', 'roomId'));
     }
 
     public function store(Request $request)

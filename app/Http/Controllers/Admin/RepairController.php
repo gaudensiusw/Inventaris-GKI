@@ -39,7 +39,7 @@ class RepairController extends Controller
         }
 
         $repairs = $query->paginate($perPage)->withQueryString();
-        $items = Item::where('qty_tersedia', '>', 0)->get();
+        $items = Item::orderBy('name')->get();
         
         return view('admin.repair.index', compact('repairs', 'search', 'perPage', 'stats', 'items'));
     }
