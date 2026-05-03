@@ -18,11 +18,25 @@ class QrScannerController extends Controller
     {
         $request->validate(['code' => 'required|string|max:50']);
         $code = $request->code;
-        $item = Item::where('kode_aset', $code)->orWhere('item_id', $code)->first();
+        $item = Item::where('kode_aset', $code)
+            ->orWhere('barcode', $code)
+            ->orWhere('entno', $code)
+            ->first();
 
         if ($item) {
+            $item->load(['category', 'room']);
             return response()->json([
                 'success' => true,
+                'item' => [
+                    'name' => $item->name,
+                    'kode_aset' => $item->kode_aset,
+                    'quantity' => $item->quantity,
+                    'status' => $item->status,
+                    'condition' => $item->condition,
+                    'category' => $item->category->name ?? 'Tanpa Kategori',
+                    'room' => $item->room->name ?? 'Tanpa Ruangan',
+                    'image_url' => $item->image ? asset('storage/' . $item->image) : null,
+                ],
                 'redirect_url' => route('inventory.index', ['search' => $item->kode_aset])
             ]);
         }

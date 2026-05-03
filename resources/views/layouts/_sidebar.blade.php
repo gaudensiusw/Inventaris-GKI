@@ -81,8 +81,12 @@
             <span class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Lainnya</span>
         </div>
         <div class="space-y-1 pb-6">
-            <a href="{{ route('report.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('report.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
-                <i data-lucide="file-text" class="w-5 h-5 {{ request()->routeIs('report.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
+            <a href="{{ route('report.comparison') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('report.comparison') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
+                <i data-lucide="archive" class="w-5 h-5 {{ request()->routeIs('report.comparison') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
+                <span class="font-bold">Arsip Laporan</span>
+            </a>
+            <a href="{{ route('report.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('report.index') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
+                <i data-lucide="file-text" class="w-5 h-5 {{ request()->routeIs('report.index') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Laporan</span>
             </a>
             <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('users.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">

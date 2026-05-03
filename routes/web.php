@@ -60,6 +60,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
     Route::get('/special-status', [SpecialStatusController::class, 'index'])->name('special-status.index');
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    Route::get('/report/comparison', [ReportController::class, 'comparison'])->name('report.comparison');
     Route::get('/disposal', [DisposalController::class, 'index'])->name('disposal.index');
     Route::post('/disposal/{id}/restore', [DisposalController::class, 'restore'])->name('disposal.restore');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

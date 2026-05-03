@@ -138,4 +138,25 @@ class ReportController extends Controller
             'detailedStatus' => $detailedStatus,
         ];
     }
+
+    public function comparison()
+    {
+        // Get all completed audit headers ordered by date
+        $headers = \App\Models\StockOpnameHeader::where('status', 'Completed')
+            ->orderBy('tgl_audit', 'asc')
+            ->get();
+            
+        // Get all active items
+        $items = Item::with(['category', 'room'])->orderBy('name')->get();
+        
+        // Load details efficiently: group by item ID and then index by SO header ID
+        $details = \App\Models\StockOpnameDetail::whereIn('id_so', $headers->pluck('id_so'))
+            ->get()
+            ->groupBy('id_barang')
+            ->map(function ($itemDetails) {
+                return $itemDetails->keyBy('id_so');
+            });
+
+        return view('admin.report.comparison', compact('headers', 'items', 'details'));
+    }
 }
