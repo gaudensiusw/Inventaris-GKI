@@ -68,7 +68,7 @@
             </a>
             <a href="{{ route('disposal.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('disposal.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="trash-2" class="w-5 h-5 {{ request()->routeIs('disposal.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
-                <span class="font-bold">Penghapusan Barang</span>
+                <span class="font-bold">Riwayat Penghapusan</span>
             </a>
             <a href="{{ route('history.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('history.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="history" class="w-5 h-5 {{ request()->routeIs('history.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>

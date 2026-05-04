@@ -34,7 +34,6 @@ class Item extends Model
         'qty_pengadaan',
         'condition',
         'status',
-        'price',
         'purchase_date',
         'description',
         'keterangan',
@@ -43,7 +42,6 @@ class Item extends Model
 
     protected $casts = [
         'purchase_date' => 'date',
-        'price' => 'decimal:2',
         'is_write_off' => 'boolean',
     ];
 

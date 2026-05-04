@@ -75,7 +75,19 @@
             <div class="card-premium p-8 border-none flex flex-col gap-6 group hover:shadow-xl transition-all">
                 <div class="flex justify-between items-start">
                     <div class="flex flex-col gap-1">
-                        <h3 class="text-xl font-black text-slate-800">{{ $item->name }} <span class="text-xs font-bold text-slate-300 ml-2">{{ $item->kode_aset }}</span></h3>
+                        <h3 class="text-xl font-black text-slate-800">{{ $item->name }} 
+                            <span class="text-xs font-bold text-slate-300 ml-2 flex items-center gap-2 inline-flex">
+                                {{ $item->kode_aset }}
+                                <span class="relative group/qr cursor-pointer">
+                                    <i data-lucide="qr-code" class="w-3 h-3 text-blue-300"></i>
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/qr:block z-50 animate-in fade-in zoom-in duration-200">
+                                        <div class="p-2 bg-white rounded-xl shadow-2xl border border-slate-100">
+                                            {!! QrCode::size(100)->generate($item->kode_aset) !!}
+                                        </div>
+                                    </div>
+                                </span>
+                            </span>
+                        </h3>
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ $item->category->name ?? 'Tanpa Kategori' }}</p>
                     </div>
                     <div class="flex gap-2">
@@ -101,10 +113,6 @@
                     <div class="flex flex-col gap-1">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Tanggal Beli</span>
                         <span class="text-sm font-bold text-slate-700">{{ $item->purchase_date ? \Carbon\Carbon::parse($item->purchase_date)->format('d M Y') : '-' }}</span>
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Harga</span>
-                        <span class="text-sm font-bold text-slate-700">Rp {{ number_format($item->price, 0, ',', '.') }}</span>
                     </div>
                 </div>
 

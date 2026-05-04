@@ -67,9 +67,9 @@
                 <i data-lucide="download" class="w-4 h-4"></i>
                 <span>Export</span>
             </a>
-            <button onclick="window.print()" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
-                <i data-lucide="printer" class="w-4 h-4"></i>
-                <span>Print</span>
+            <button onclick="printAllLabels()" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
+                <i data-lucide="printer" class="w-4 h-4 text-emerald-500"></i>
+                <span>Cetak Semua Label QR</span>
             </button>
         </div>
     </div>
@@ -85,7 +85,6 @@
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kondisi</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lokasi</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jumlah</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Harga</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right print:hidden">Aksi</th>
                     </tr>
                 </thead>
@@ -99,7 +98,17 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-800">{{ $item->name }}</h4>
-                                    <p class="text-xs text-slate-400 font-medium tracking-tight">{{ $item->kode_aset }}</p>
+                                    <p class="text-xs text-slate-400 font-medium tracking-tight flex items-center gap-2">
+                                        {{ $item->kode_aset }}
+                                        <span class="relative group/qr cursor-pointer">
+                                            <i data-lucide="qr-code" class="w-3 h-3 text-blue-400"></i>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/qr:block z-50 animate-in fade-in zoom-in duration-200">
+                                                <div class="p-2 bg-white rounded-xl shadow-2xl border border-slate-100">
+                                                    {!! QrCode::size(120)->generate($item->kode_aset) !!}
+                                                </div>
+                                            </div>
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
                         </td>
@@ -143,11 +152,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-5">
-                            <p class="text-sm font-bold text-slate-700">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
-                        </td>
                         <td class="px-6 py-5 text-right print:hidden">
                             <div class="flex justify-end gap-1">
+                                <button onclick="printLabel({{ json_encode($item) }})" class="p-2 hover:bg-emerald-50 text-emerald-500 rounded-lg transition-colors" title="Print Label QR"><i data-lucide="printer" class="w-4 h-4"></i></button>
                                 <button onclick="viewItem({{ json_encode($item) }})" class="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                 <button onclick="editItem({{ json_encode($item) }})" class="p-2 hover:bg-slate-100 text-slate-400 rounded-lg transition-colors"><i data-lucide="edit" class="w-4 h-4"></i></button>
                                 <form action="{{ route('inventory.destroy', $item->id) }}" method="POST" onsubmit="return confirmSubmit(this, { title: 'Hapus Barang?', message: 'Barang akan dipindahkan ke daftar penghapusan dan tidak tampil di inventaris aktif.', color: 'red', icon: 'trash-2' })">
@@ -289,8 +296,11 @@
             <!-- Top Blue Header -->
             <div class="bg-blue-600 p-8 flex items-center justify-between">
                 <div class="flex items-center gap-6">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
-                        <i data-lucide="package" class="w-8 h-8 text-white"></i>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg p-2" id="view_qr_container">
+                            <!-- QR Code will be injected here -->
+                        </div>
+                        <p class="text-[10px] font-black text-blue-100 uppercase tracking-widest">Scan Me</p>
                     </div>
                     <div>
                         <h2 id="view_name" class="text-2xl font-black text-white">Nama Barang</h2>
@@ -389,6 +399,18 @@
         document.getElementById('view_kode').innerText = item.kode_aset || '-';
         document.getElementById('view_tersedia').innerText = 'Tersedia: ' + (item.qty_tersedia || 0);
         
+        // Update QR Code in View Modal
+        const qrContainer = document.getElementById('view_qr_container');
+        if (item.kode_aset) {
+            // Using an API or a pre-rendered set of QR codes might be complex for JS alone without simple-qrcode being client-side.
+            // But since this is a Blade file, I can't easily generate a NEW QR code for a JS object unless I use a JS library or a route.
+            // However, I can use a small trick: use an image from a route that generates QR.
+            // But wait, simplesoftwareio-qrcode doesn't have a default route.
+            // I'll use a public QR API or better, I'll just show the one already in the table or use a helper.
+            // Actually, I can create a route /admin/qr-generate/{code}
+            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.kode_aset}" class="w-full h-full" alt="QR Code">`;
+        }
+        
         document.getElementById('view_kategori').innerText = (item.category && item.category.name) ? item.category.name : '-';
         document.getElementById('view_lokasi').innerText = (item.room && item.room.name) ? item.room.name : '-';
         
@@ -419,11 +441,103 @@
         form.querySelector('[name="qty_hilang"]').value = item.qty_hilang;
         form.querySelector('[name="qty_tidak_digunakan"]').value = item.qty_tidak_digunakan;
         form.querySelector('[name="qty_pengadaan"]').value = item.qty_pengadaan;
-        form.querySelector('[name="price"]').value = item.price;
         form.querySelector('[name="purchase_date"]').value = item.purchase_date;
         form.querySelector('[name="description"]').value = item.description || '';
 
         openModal('editItemModal');
+    }
+
+    function printLabel(item) {
+        const printWindow = window.open('', '_blank', 'width=400,height=400');
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${item.kode_aset}`;
+        
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Print Label - ${item.name}</title>
+                    <style>
+                        body { 
+                            font-family: sans-serif; 
+                            display: flex; 
+                            flex-direction: column; 
+                            align-items: center; 
+                            justify-content: center; 
+                            height: 100vh; 
+                            margin: 0; 
+                        }
+                        .label-container { 
+                            text-align: center; 
+                            border: 2px solid #eee; 
+                            padding: 20px; 
+                            border-radius: 10px;
+                        }
+                        img { width: 200px; height: 200px; margin-bottom: 10px; }
+                        h2 { margin: 0; font-size: 18px; color: #333; }
+                        p { margin: 5px 0 0; font-size: 14px; font-weight: bold; color: #666; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <div class="label-container">
+                        <img src="${qrUrl}" alt="QR Code">
+                        <h2>${item.name}</h2>
+                        <p>${item.kode_aset}</p>
+                    </div>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    function printAllLabels() {
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        const items = @json($items->items());
+        
+        let labelsHtml = '';
+        items.forEach(item => {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.kode_aset}`;
+            labelsHtml += `
+                <div class="label-card">
+                    <img src="${qrUrl}" alt="QR Code">
+                    <div class="info">
+                        <div class="name">${item.name}</div>
+                        <div class="code">${item.kode_aset}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Cetak Semua Label QR</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+                        .label-card { 
+                            width: 250px; 
+                            border: 1px solid #ddd; 
+                            padding: 15px; 
+                            display: flex; 
+                            align-items: center; 
+                            gap: 15px;
+                            border-radius: 8px;
+                            page-break-inside: avoid;
+                        }
+                        img { width: 80px; height: 80px; }
+                        .info { text-align: left; }
+                        .name { font-size: 14px; font-weight: bold; margin-bottom: 4px; color: #333; }
+                        .code { font-size: 12px; color: #666; font-family: monospace; }
+                        @media print {
+                            body { padding: 0; }
+                            .label-card { border: 1px solid #eee; }
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    ${labelsHtml}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
     }
 
     // Auto-open modal if there are validation errors

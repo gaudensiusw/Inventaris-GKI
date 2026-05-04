@@ -60,7 +60,6 @@ class ItemController extends Controller
             'qty_hilang' => 'required|integer|min:0',
             'qty_tidak_digunakan' => 'required|integer|min:0',
             'qty_pengadaan' => 'required|integer|min:0',
-            'price' => 'required|numeric|min:0',
             'purchase_date' => 'nullable|date',
             'description' => 'nullable|string',
         ]);
@@ -98,7 +97,7 @@ class ItemController extends Controller
     public function exportCsv()
     {
         $items = Item::with(['category', 'room'])->get();
-        $csvHeader = ['ID', 'Kode Aset', 'Nama', 'Kategori', 'Lokasi', 'Total', 'Tersedia', 'Harga'];
+        $csvHeader = ['ID', 'Kode Aset', 'Nama', 'Kategori', 'Lokasi', 'Total', 'Tersedia'];
         
         $callback = function() use ($items, $csvHeader) {
             $file = fopen('php://output', 'w');
@@ -112,7 +111,6 @@ class ItemController extends Controller
                     $item->room->name ?? '-',
                     $item->quantity,
                     $item->qty_tersedia,
-                    $item->price
                 ]);
             }
             fclose($file);
@@ -156,7 +154,6 @@ class ItemController extends Controller
             'qty_hilang' => 'required|integer|min:0',
             'qty_tidak_digunakan' => 'required|integer|min:0',
             'qty_pengadaan' => 'required|integer|min:0',
-            'price' => 'required|numeric|min:0',
             'purchase_date' => 'nullable|date',
             'description' => 'nullable|string',
         ]);
