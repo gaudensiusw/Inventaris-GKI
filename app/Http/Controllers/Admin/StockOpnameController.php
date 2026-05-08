@@ -93,4 +93,10 @@ class StockOpnameController extends Controller
         $stockOpname->load(['details.item', 'user']);
         return view('admin.stock-opname.show', compact('stockOpname'));
     }
+
+    public function print(StockOpnameHeader $stockOpname)
+    {
+        $stockOpname->load(['details.item', 'user']);
+        return view('admin.stock-opname.print', compact('stockOpname'));
+    }
 }

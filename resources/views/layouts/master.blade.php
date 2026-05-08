@@ -47,7 +47,7 @@
     <script>
         let confirmCallback = null;
 
-        function showConfirm({ title, message, icon, color, onConfirm }) {
+        function showConfirm({ title, message, icon, color, confirmText, onConfirm }) {
             const modal = document.getElementById('confirmModal');
             const content = document.getElementById('confirmModalContent');
             const iconContainer = document.getElementById('confirmIconContainer');
@@ -60,10 +60,39 @@
 
             titleEl.innerText = title || 'Konfirmasi';
             messageEl.innerText = message || 'Apakah Anda yakin?';
+            btn.innerText = confirmText || 'Ya, Lanjutkan';
             
             const themeColor = color || 'blue';
-            iconContainer.className = `w-20 h-20 rounded-full flex items-center justify-center bg-${themeColor}-50 text-${themeColor}-600`;
-            btn.className = `flex-[2] px-6 py-4 bg-${themeColor}-600 text-white rounded-2xl text-xs font-black uppercase shadow-xl shadow-${themeColor}-200 hover:bg-${themeColor}-700 transition-all`;
+            
+            // Map colors to ensure tailwind classes are literal strings for the scanner
+            const colorMaps = {
+                red: {
+                    bg: 'bg-red-600',
+                    hover: 'hover:bg-red-700',
+                    shadow: 'shadow-red-200',
+                    iconBg: 'bg-red-50',
+                    iconText: 'text-red-600'
+                },
+                blue: {
+                    bg: 'bg-blue-600',
+                    hover: 'hover:bg-blue-700',
+                    shadow: 'shadow-blue-200',
+                    iconBg: 'bg-blue-50',
+                    iconText: 'text-blue-600'
+                },
+                emerald: {
+                    bg: 'bg-emerald-600',
+                    hover: 'hover:bg-emerald-700',
+                    shadow: 'shadow-emerald-200',
+                    iconBg: 'bg-emerald-50',
+                    iconText: 'text-emerald-600'
+                }
+            };
+
+            const config = colorMaps[themeColor] || colorMaps.blue;
+
+            iconContainer.className = `w-20 h-20 rounded-full flex items-center justify-center ${config.iconBg} ${config.iconText}`;
+            btn.className = `flex-[2] px-6 py-4 ${config.bg} text-white rounded-2xl text-xs font-black uppercase shadow-xl ${config.shadow} ${config.hover} transition-all`;
             iconEl.setAttribute('data-lucide', icon || 'help-circle');
             
             if (window.lucide) lucide.createIcons();
@@ -95,6 +124,7 @@
                 message: options.message || 'Apakah Anda yakin ingin melanjutkan?',
                 icon: options.icon || 'alert-triangle',
                 color: options.color || 'blue',
+                confirmText: options.confirmText || 'Ya, Lanjutkan',
                 onConfirm: () => form.submit()
             });
             return false;

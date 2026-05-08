@@ -43,6 +43,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/stock-opname/create', [StockOpnameController::class, 'create'])->name('stock-opname.create');
     Route::post('/stock-opname/store', [StockOpnameController::class, 'store'])->name('stock-opname.store');
     Route::get('/stock-opname/{stockOpname}', [StockOpnameController::class, 'show'])->name('stock-opname.show');
+    Route::get('/stock-opname/{stockOpname}/print', [StockOpnameController::class, 'print'])->name('stock-opname.print');
     
     // QR Scanner
     Route::get('/qr-scanner', [QrScannerController::class, 'index'])->name('qr-scanner.index');

@@ -65,30 +65,50 @@ class ItemController extends Controller
         ]);
 
         try {
-            // Generate metadata
-            $count = (Item::withTrashed()->max('id') ?? 0) + 1;
-            $validated['kode_aset'] = 'INV-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+            // Generate Asset Code based on Category
+            $categoryId = $validated['category_id'];
+            
+            // Find the last item in this category to get the next sequence number
+            // We look for codes that start with the category ID
+            $lastItem = Item::where('category_id', $categoryId)
+                            ->where('kode_aset', 'REGEXP', '^' . $categoryId . '[0-9]+$')
+                            ->orderByRaw('LENGTH(kode_aset) DESC, kode_aset DESC')
+                            ->first();
+
+            $nextSequence = 1;
+            if ($lastItem) {
+                // Extract number from the end (e.g. 4001 -> 001 -> 1)
+                $lastCode = $lastItem->kode_aset;
+                $sequenceStr = substr($lastCode, strlen($categoryId));
+                if (is_numeric($sequenceStr)) {
+                    $nextSequence = (int)$sequenceStr + 1;
+                }
+            }
+            
+            // Format: CategoryID + 4-digit sequence (e.g. 10001)
+            $validated['kode_aset'] = $categoryId . str_pad($nextSequence, 4, '0', STR_PAD_LEFT);
+            $validated['barcode'] = $validated['kode_aset'];
             $validated['slug'] = Str::slug($validated['name']) . '-' . time();
             
             // Default condition and status based on quantities
             $validated['condition'] = $validated['qty_baik'] > 0 ? 'Baik' : ($validated['qty_rusak_ringan'] > 0 ? 'Rusak Ringan' : 'Rusak Berat');
             $validated['status'] = $validated['qty_tersedia'] > 0 ? 'Tersedia' : ($validated['qty_dipinjam'] > 0 ? 'Dipinjam' : 'Lainnya');
             
-            // Set other defaults for legacy database
+            // Sync legacy fields
             $validated['unit'] = 'Unit';
             $validated['is_write_off'] = false;
             $validated['keterangan'] = $validated['description'];
-
-            // Explicitly set null for other fields to avoid potential issues
-            $validated['merk_model'] = null;
-            $validated['spesifikasi'] = null;
+            $validated['tgl_perolehan'] = $validated['purchase_date'];
 
             Item::create($validated);
 
-            return redirect()->route('inventory.index')->with('success', 'Barang berhasil ditambahkan!');
+            return redirect()->route('inventory.index')->with('success', 'Barang berhasil ditambahkan dengan Kode Aset: ' . $validated['kode_aset']);
         } catch (\Exception $e) {
-            Log::error('Gagal simpan barang: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            return back()->with('error', 'Gagal menambahkan barang. Silakan periksa kembali data yang diinput.')->withInput();
+            Log::error('Gagal simpan barang: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal menambahkan barang: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -165,13 +185,17 @@ class ItemController extends Controller
             $validated['condition'] = $validated['qty_baik'] > 0 ? 'Baik' : ($validated['qty_rusak_ringan'] > 0 ? 'Rusak Ringan' : 'Rusak Berat');
             $validated['status'] = $validated['qty_tersedia'] > 0 ? 'Tersedia' : ($validated['qty_dipinjam'] > 0 ? 'Dipinjam' : 'Lainnya');
             $validated['keterangan'] = $validated['description'];
+            $validated['tgl_perolehan'] = $validated['purchase_date'];
 
             $item->update($validated);
 
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil diperbarui!');
         } catch (\Exception $e) {
-            Log::error('Gagal update barang: ' . $e->getMessage(), ['id' => $id]);
-            return back()->with('error', 'Gagal memperbarui barang. Silakan periksa kembali data yang diinput.')
+            Log::error('Gagal update barang: ' . $e->getMessage(), [
+                'id' => $id,
+                'request' => $request->all()
+            ]);
+            return back()->with('error', 'Gagal memperbarui barang: ' . $e->getMessage())
                         ->with('is_edit', true)
                         ->with('edit_item_id', $id)
                         ->withInput();

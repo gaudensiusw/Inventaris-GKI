@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Storage;
+
 class RoomController extends Controller
 {
     public function index(Request $request)
@@ -29,7 +31,13 @@ class RoomController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:rooms,name',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('rooms', 'public');
+            $validated['image'] = $path;
+        }
 
         Room::create($validated);
 
@@ -43,7 +51,17 @@ class RoomController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:rooms,name,' . $id,
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($room->image) {
+                Storage::disk('public')->delete($room->image);
+            }
+            $path = $request->file('image')->store('rooms', 'public');
+            $validated['image'] = $path;
+        }
 
         $room->update($validated);
 
@@ -54,8 +72,12 @@ class RoomController extends Controller
     {
         $room = Room::findOrFail($id);
         
-        if ($room->items()->count() > 0) {
-            return back()->with('error', 'Lokasi tidak bisa dihapus karena masih berisi barang!');
+        if ($room->items()->withTrashed()->count() > 0) {
+            return back()->with('error', 'Lokasi tidak bisa dihapus karena masih berisi barang (termasuk barang di Disposal)!');
+        }
+
+        if ($room->image) {
+            Storage::disk('public')->delete($room->image);
         }
 
         $room->delete();

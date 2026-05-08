@@ -12,10 +12,10 @@
             <p class="text-slate-500 text-sm mt-1">ID Audit: SO-{{ \Carbon\Carbon::parse($stockOpname->tgl_audit)->format('Ymd') }}-{{ str_pad($stockOpname->id_so, 3, '0', STR_PAD_LEFT) }} | Dilakukan oleh {{ $stockOpname->user->name ?? 'System' }}</p>
         </div>
         <div class="flex gap-3">
-            <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
+            <a href="{{ route('stock-opname.print', $stockOpname->id_so ?? $stockOpname->id) }}" target="_blank" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
                 <i data-lucide="printer" class="w-4 h-4"></i>
                 <span>Print Report</span>
-            </button>
+            </a>
             <a href="{{ route('stock-opname.index') }}" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-all flex items-center gap-2">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 <span>Kembali</span>

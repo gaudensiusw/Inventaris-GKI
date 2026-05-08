@@ -49,27 +49,44 @@
     <!-- Room Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($rooms as $room)
-        <div class="card-premium p-6 border-none group relative overflow-hidden">
-            <div class="flex justify-between items-start mb-4">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                    <i data-lucide="map-pin" class="w-6 h-6"></i>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="editRoom({{ $room->id }}, '{{ $room->name }}', '{{ $room->description }}')" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+        <div class="card-premium p-0 border border-slate-200 group relative overflow-hidden flex flex-col shadow-card hover:shadow-xl transition-all duration-300">
+            <!-- Room Image -->
+            <div class="relative h-48 w-full overflow-hidden">
+                @if($room->image)
+                    <img src="{{ asset('storage/' . $room->image) }}" alt="{{ $room->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                @else
+                    <div class="w-full h-full bg-slate-200 flex flex-col items-center justify-center text-slate-500 gap-2">
+                        <i data-lucide="image" class="w-10 h-10 opacity-40"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">No Image</span>
+                    </div>
+                @endif
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-40"></div>
+                
+                <!-- Actions on top of image -->
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <button onclick="editRoom({{ $room->id }}, '{{ $room->name }}', '{{ $room->description }}', '{{ $room->image ? asset('storage/' . $room->image) : '' }}')" class="p-2 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-white hover:text-blue-600 rounded-xl transition-all shadow-lg border border-white/50">
                         <i data-lucide="edit-3" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="confirmDeleteRoom({{ $room->id }}, '{{ $room->name }}')" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                    <button onclick="confirmDeleteRoom({{ $room->id }}, '{{ $room->name }}')" class="p-2 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-lg border border-white/50">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
-            
-            <h3 class="text-xl font-black text-slate-800 mb-1">{{ $room->name }}</h3>
-            <p class="text-xs text-slate-500 font-medium mb-4">{{ $room->description ?? 'Tidak ada deskripsi' }}</p>
-            
-            <div class="flex items-center gap-2 pt-4 border-t border-slate-50">
-                <div class="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black text-slate-500 uppercase">
-                    {{ $room->items_count }} Barang
+
+            <div class="p-6 flex-1 flex flex-col bg-white">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-black text-slate-800">{{ $room->name }}</h3>
+                    <div class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-tight">
+                        {{ $room->items_count }} Barang
+                    </div>
+                </div>
+                <p class="text-xs text-slate-600 font-medium mb-4 line-clamp-2 leading-relaxed">{{ $room->description ?? 'Tidak ada deskripsi' }}</p>
+                
+                <div class="mt-auto pt-4 border-t border-slate-100 flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-100 text-slate-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="map-pin" class="w-3 h-3"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Area Inventaris</span>
                 </div>
             </div>
         </div>
@@ -101,13 +118,19 @@
                 </button>
             </div>
 
-            <form action="{{ route('room.store') }}" method="POST">
+            <form action="{{ route('room.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="flex flex-col gap-6">
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-500 ml-1">Nama Lokasi <span class="text-red-500">*</span></label>
                         <input type="text" name="name" required placeholder="Contoh: Ruang Konsistori"
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-500 ml-1">Foto Ruangan</label>
+                        <input type="file" name="image" accept="image/*"
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                        <p class="text-[10px] text-slate-400 ml-1">Format: JPG, PNG. Maksimal 2MB.</p>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-500 ml-1">Deskripsi</label>
@@ -140,13 +163,22 @@
                 </button>
             </div>
 
-            <form id="editRoomForm" method="POST">
+            <form id="editRoomForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="flex flex-col gap-6">
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-bold text-slate-500 ml-1">Nama Lokasi <span class="text-red-500">*</span></label>
                         <input type="text" name="name" id="edit_name" required
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-bold text-slate-500 ml-1">Foto Ruangan</label>
+                        <div id="current_image_container" class="hidden mb-2">
+                            <img id="current_image_preview" src="" class="w-full h-32 object-cover rounded-2xl border border-slate-100">
+                            <p class="text-[10px] text-slate-400 mt-1 italic">Foto saat ini (biarkan kosong jika tidak ingin diubah)</p>
+                        </div>
+                        <input type="file" name="image" accept="image/*"
                             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
                     </div>
                     <div class="flex flex-col gap-1.5">
@@ -191,11 +223,22 @@
         }, 300);
     }
 
-    function editRoom(id, name, description) {
+    function editRoom(id, name, description, imageUrl) {
         const form = document.getElementById('editRoomForm');
         form.action = `/admin/room/${id}`;
         document.getElementById('edit_name').value = name;
         document.getElementById('edit_description').value = description;
+        
+        const imgContainer = document.getElementById('current_image_container');
+        const imgPreview = document.getElementById('current_image_preview');
+        
+        if (imageUrl) {
+            imgPreview.src = imageUrl;
+            imgContainer.classList.remove('hidden');
+        } else {
+            imgContainer.classList.add('hidden');
+        }
+        
         openModal('editRoomModal');
     }
 
@@ -205,6 +248,7 @@
             message: `Apakah Anda yakin ingin menghapus "${name}"? Lokasi hanya bisa dihapus jika tidak ada barang di dalamnya.`,
             color: 'red',
             icon: 'trash-2',
+            confirmText: 'Hapus Lokasi',
             onConfirm: () => {
                 const form = document.getElementById('deleteRoomForm');
                 form.action = `/admin/room/${id}`;
