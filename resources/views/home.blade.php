@@ -12,24 +12,37 @@
     <nav class="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                        <i data-lucide="package" class="w-6 h-6"></i>
+                <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <div class="w-12 h-12 rounded-xl overflow-hidden bg-white shadow-sm border border-slate-100 flex items-center justify-center p-1">
+                        <img src="{{ asset('images/logo-gki.png') }}" alt="Logo GKI Delima" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <h1 class="text-xl font-black text-slate-800 tracking-tight">GKI Delima</h1>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sistem Inventaris</p>
                     </div>
+                </a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('user.katalog.index') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-md shadow-blue-200">
+                        <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                        Form Peminjaman
+                    </a>
+                    <a href="{{ route('user.orders.status') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        Cek Status
+                    </a>
+                    <a href="{{ route('login') }}" class="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition-all shadow-md">Login Admin</a>
                 </div>
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('login') }}" class="px-6 py-2.5 bg-slate-800 text-white rounded-xl text-xs font-black uppercase hover:bg-slate-900 transition-all shadow-lg">Login Admin</a>
-                </div>
+            </div>
+            <!-- Mobile nav -->
+            <div class="sm:hidden flex gap-2 pb-3">
+                <a href="{{ route('user.katalog.index') }}" class="flex-1 text-center py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold">Form Peminjaman</a>
+                <a href="{{ route('user.orders.status') }}" class="flex-1 text-center py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cek Status</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero -->
-    <header class="bg-white border-b border-slate-100 py-20">
+    <header class="bg-white border-b border-slate-100 py-16">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <h2 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter mb-4">Daftar Barang & Aset Gereja</h2>
             <p class="text-slate-500 max-w-2xl mx-auto text-lg">Pantau ketersediaan dan kondisi barang inventaris GKI Delima secara transparan.</p>
@@ -45,7 +58,7 @@
                     class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all font-medium text-sm shadow-sm">
             </div>
             <div class="flex gap-4">
-                <select name="category_id" class="px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 transition-all text-sm font-bold text-slate-600">
+                <select name="category_id" onchange="this.form.submit()" class="px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 transition-all text-sm font-bold text-slate-600 cursor-pointer">
                     <option value="">Semua Kategori</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
@@ -90,6 +103,19 @@
                         <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md font-black">{{ $item->qty_tersedia }} Unit</span>
                     </div>
                 </div>
+
+                @if($item->qty_tersedia > 0)
+                <a href="{{ route('user.orders.create', $item->id) }}" class="block w-full text-center px-4 py-3 bg-blue-600 text-white rounded-2xl text-xs font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">
+                    <span class="flex items-center justify-center gap-2">
+                        <i data-lucide="hand" class="w-3.5 h-3.5"></i>
+                        Ajukan Peminjaman
+                    </span>
+                </a>
+                @else
+                <button disabled class="block w-full text-center px-4 py-3 bg-slate-100 text-slate-400 rounded-2xl text-xs font-bold cursor-not-allowed">
+                    Tidak Tersedia
+                </button>
+                @endif
             </div>
             @empty
             <div class="col-span-full py-20 text-center flex flex-col items-center gap-4">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Borrowing;
 use App\Models\Item;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,7 @@ class BorrowingController extends Controller
             'late' => Borrowing::where('status_pinjam', 'Dipinjam')
                 ->where('tgl_kembali_rencana', '<', Carbon::now())
                 ->count(),
+            'pending_requests' => Order::where('status', 'Pending')->count(),
         ];
 
         $query = Borrowing::with('item')->where('status_pinjam', 'Dipinjam');
@@ -82,27 +84,158 @@ class BorrowingController extends Controller
         }
     }
 
-    public function returnItem($id)
+    public function returnItem(Request $request, $id)
     {
+        $validated = $request->validate([
+            'qty_kembali' => 'required|integer|min:1',
+            'kondisi_kembali' => 'required|in:Baik,Rusak Ringan,Rusak Berat,Hilang',
+            'catatan_kembali' => 'nullable|string|max:500',
+        ]);
+
         try {
             DB::beginTransaction();
             
             $borrowing = Borrowing::findOrFail($id);
+            
+            // Validate qty_kembali doesn't exceed borrowed qty
+            if ($validated['qty_kembali'] > $borrowing->qty) {
+                return back()->with('error', 'Jumlah kembali tidak boleh melebihi jumlah pinjam (' . $borrowing->qty . ')!');
+            }
+
             $borrowing->update([
                 'status_pinjam' => 'Kembali',
-                'tgl_kembali_aktual' => Carbon::now()
+                'tgl_kembali_aktual' => Carbon::now(),
+                'qty_kembali' => $validated['qty_kembali'],
+                'kondisi_kembali' => $validated['kondisi_kembali'],
+                'catatan_kembali' => $validated['catatan_kembali'],
             ]);
 
             $item = Item::findOrFail($borrowing->id_barang);
+            
+            // Decrease borrowed qty
             $item->decrement('qty_dipinjam', $borrowing->qty);
-            $item->increment('qty_tersedia', $borrowing->qty);
+
+            // Update qty based on return condition
+            switch ($validated['kondisi_kembali']) {
+                case 'Baik':
+                    $item->increment('qty_tersedia', $validated['qty_kembali']);
+                    break;
+                case 'Rusak Ringan':
+                    $item->increment('qty_rusak_ringan', $validated['qty_kembali']);
+                    break;
+                case 'Rusak Berat':
+                    $item->increment('qty_rusak_berat', $validated['qty_kembali']);
+                    break;
+                case 'Hilang':
+                    $item->increment('qty_hilang', $validated['qty_kembali']);
+                    break;
+            }
+
+            // If returned less than borrowed, remaining is also counted as lost
+            $notReturned = $borrowing->qty - $validated['qty_kembali'];
+            if ($notReturned > 0) {
+                $item->increment('qty_hilang', $notReturned);
+            }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Barang berhasil dikembalikan!');
+            return redirect()->back()->with('success', 'Barang berhasil dikembalikan! Kondisi: ' . $validated['kondisi_kembali']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Gagal proses pengembalian: ' . $e->getMessage(), ['id' => $id]);
             return back()->with('error', 'Gagal memproses pengembalian. Silakan coba lagi.');
         }
     }
+
+    /**
+     * List pending borrowing requests from users
+     */
+    public function pendingRequests()
+    {
+        $requests = Order::with(['user', 'item.category', 'item.room'])
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        $pendingCount = Order::where('status', 'Pending')->count();
+
+        return view('admin.borrowing.requests', compact('requests', 'pendingCount'));
+    }
+
+    /**
+     * Approve a borrowing request
+     */
+    public function approve($id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->status !== 'Pending') {
+            return back()->with('error', 'Request ini sudah diproses sebelumnya.');
+        }
+
+        $item = Item::findOrFail($order->id_barang);
+
+        // Real-time stock check
+        if ($item->qty_tersedia < $order->qty) {
+            return back()->with('error', 'Stok tidak mencukupi! Tersedia: ' . $item->qty_tersedia . ', diminta: ' . $order->qty);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Update order status
+            $order->update([
+                'status' => 'Disetujui',
+                'approved_by' => auth()->id(),
+            ]);
+
+            // Create rent record
+            Borrowing::create([
+                'id_barang' => $order->id_barang,
+                'qty' => $order->qty,
+                'peminjam' => $order->nama_peminjam,
+                'komisi_terkait' => null,
+                'tgl_pinjam' => $order->start_date,
+                'tgl_kembali_rencana' => $order->end_date,
+                'id_user' => auth()->id(),
+                'status_pinjam' => 'Dipinjam',
+                'catatan' => $order->reason . ($order->catatan ? ' | ' . $order->catatan : ''),
+            ]);
+
+            // Update item qty
+            $item->decrement('qty_tersedia', $order->qty);
+            $item->increment('qty_dipinjam', $order->qty);
+
+            DB::commit();
+            return back()->with('success', 'Request peminjaman berhasil disetujui!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal approve request: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses persetujuan. Silakan coba lagi.');
+        }
+    }
+
+    /**
+     * Reject a borrowing request
+     */
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'reject_reason' => 'required|string|max:500',
+        ]);
+
+        $order = Order::findOrFail($id);
+
+        if ($order->status !== 'Pending') {
+            return back()->with('error', 'Request ini sudah diproses sebelumnya.');
+        }
+
+        $order->update([
+            'status' => 'Ditolak',
+            'approved_by' => auth()->id(),
+            'reject_reason' => $request->reject_reason,
+        ]);
+
+        return back()->with('success', 'Request peminjaman telah ditolak.');
+    }
 }
+

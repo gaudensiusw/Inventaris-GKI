@@ -21,4 +21,16 @@ class DisposalController extends Controller
         $item->restore();
         return redirect()->route('disposal.index')->with('success', 'Barang berhasil dipulihkan (Restore) ke inventaris.');
     }
+
+    /**
+     * Permanently delete an item (Super Admin only)
+     */
+    public function forceDelete($id)
+    {
+        $item = Item::onlyTrashed()->findOrFail($id);
+        $itemName = $item->name;
+        $item->forceDelete();
+        return redirect()->route('disposal.index')->with('success', "Barang \"{$itemName}\" berhasil dihapus secara permanen.");
+    }
 }
+

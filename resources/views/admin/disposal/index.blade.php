@@ -41,13 +41,25 @@
                             </div>
                         </td>
                         <td class="px-8 py-5 text-right">
-                            <form action="{{ route('disposal.restore', $disposal->id) }}" method="POST" class="inline-block" onsubmit="return confirmSubmit(this, { title: 'Pulihkan Barang?', message: 'Barang ini akan dikembalikan ke daftar inventaris aktif.', color: 'emerald', icon: 'refresh-ccw' })">
-                                @csrf
-                                <button type="submit" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all shadow-sm shadow-emerald-100 flex items-center gap-2 text-xs font-bold uppercase">
-                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                                    Restore
-                                </button>
-                            </form>
+                            <div class="flex items-center justify-end gap-2">
+                                <form action="{{ route('disposal.restore', $disposal->id) }}" method="POST" class="inline-block" onsubmit="return confirmSubmit(this, { title: 'Pulihkan Barang?', message: 'Barang ini akan dikembalikan ke daftar inventaris aktif.', color: 'emerald', icon: 'refresh-ccw' })">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-500 hover:text-white transition-all shadow-sm shadow-emerald-100 flex items-center gap-2 text-xs font-bold uppercase">
+                                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                        Restore
+                                    </button>
+                                </form>
+                                @if(auth()->user()->isSuperAdmin())
+                                <form action="{{ route('disposal.forceDelete', $disposal->id) }}" method="POST" class="inline-block" onsubmit="return confirmSubmit(this, { title: 'Hapus Permanen?', message: 'PERINGATAN: Barang {{ addslashes($disposal->name) }} akan dihapus secara permanen dan tidak dapat dikembalikan!', color: 'red', icon: 'trash-2', confirmText: 'Ya, Hapus Permanen' })">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-4 py-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-100 flex items-center gap-2 text-xs font-bold uppercase">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        Hapus Permanen
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @empty

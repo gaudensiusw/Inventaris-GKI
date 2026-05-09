@@ -1,8 +1,12 @@
 <aside id="mainSidebar" class="fixed left-0 top-0 h-screen w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
     <!-- Brand -->
     <div class="px-6 py-8 flex items-center gap-4">
-        <div class="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-xl shadow-blue-500/20">
-            GKI
+        <div class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/20 overflow-hidden">
+            @if(file_exists(public_path('images/logo-gki.png')))
+                <img src="{{ asset('images/logo-gki.png') }}" alt="Logo GKI" class="w-9 h-9 object-contain">
+            @else
+                <span class="text-blue-600 font-black text-sm">GKI</span>
+            @endif
         </div>
         <div>
             <h1 class="text-sm font-black text-white leading-tight tracking-tight">GKI Delima</h1>
@@ -14,11 +18,13 @@
     <div class="px-4 mb-8">
         <div class="p-4 bg-slate-800/80 rounded-[24px] flex items-center gap-3 border border-slate-700/50 shadow-inner">
             <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/20">
-                {{ auth()->id() ?? 'A' }}
+                {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </div>
             <div class="overflow-hidden">
                 <h4 class="text-xs font-black text-white truncate">{{ auth()->user()->name ?? 'Admin Utama' }}</h4>
-                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Administrator</p>
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
+                    {{ auth()->user()->roles->first()->name ?? 'Administrator' }}
+                </p>
             </div>
         </div>
     </div>
@@ -89,10 +95,19 @@
                 <i data-lucide="file-text" class="w-5 h-5 {{ request()->routeIs('report.index') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Laporan</span>
             </a>
+
+            {{-- Super Admin Only --}}
+            @if(auth()->user()->isSuperAdmin())
+            <a href="{{ route('categories.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('categories.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
+                <i data-lucide="tag" class="w-5 h-5 {{ request()->routeIs('categories.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
+                <span class="font-bold">Kategori</span>
+            </a>
             <a href="{{ route('users.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('users.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="users" class="w-5 h-5 {{ request()->routeIs('users.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Pengguna</span>
             </a>
+            @endif
+
             <a href="{{ route('setting.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('setting.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="settings" class="w-5 h-5 {{ request()->routeIs('setting.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Pengaturan</span>
@@ -128,3 +143,4 @@
         }
     </script>
 </aside>
+

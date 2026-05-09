@@ -22,7 +22,10 @@ class Borrowing extends Model
         'tgl_kembali_aktual',
         'id_user',
         'status_pinjam',
-        'catatan'
+        'catatan',
+        'qty_kembali',
+        'kondisi_kembali',
+        'catatan_kembali',
     ];
 
     public function item()
