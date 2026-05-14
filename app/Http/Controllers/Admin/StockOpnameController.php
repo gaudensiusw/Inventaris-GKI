@@ -37,6 +37,11 @@ class StockOpnameController extends Controller
 
     public function store(Request $request)
     {
+        // Support both array and JSON string for items
+        if ($request->has('items_json') && !empty($request->items_json)) {
+            $request->merge(['items' => json_decode($request->items_json, true)]);
+        }
+
         $request->validate([
             'audit_date' => 'required|date',
             'notes' => 'nullable|string',

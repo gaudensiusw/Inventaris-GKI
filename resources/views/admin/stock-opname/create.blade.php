@@ -16,6 +16,7 @@
 
     <form id="auditForm" action="{{ route('stock-opname.store') }}" method="POST">
         @csrf
+        <input type="hidden" name="items_json" id="items_json">
         
         @if($errors->any())
         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex flex-col gap-2">
@@ -134,6 +135,28 @@
                 color: 'emerald',
                 icon: 'clipboard-check',
                 onConfirm: () => {
+                    // Collect data into JSON to avoid max_input_vars limit
+                    const items = [];
+                    const rows = document.querySelectorAll('.item-row');
+                    
+                    rows.forEach(row => {
+                        const itemId = row.querySelector('input[name*="[item_id]"]').value;
+                        const physicalQty = row.querySelector('input[name*="[physical_qty]"]').value;
+                        const notes = row.querySelector('input[name*="[notes]"]').value;
+                        
+                        items.push({
+                            item_id: itemId,
+                            physical_qty: physicalQty,
+                            notes: notes
+                        });
+
+                        // Clear names to prevent them from being sent as separate vars
+                        row.querySelectorAll('input').forEach(input => {
+                            if (input.name !== 'items_json') input.removeAttribute('name');
+                        });
+                    });
+
+                    document.getElementById('items_json').value = JSON.stringify(items);
                     document.getElementById('auditForm').submit();
                 }
             });

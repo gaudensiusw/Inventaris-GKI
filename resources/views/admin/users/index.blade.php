@@ -88,7 +88,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-800">{{ $user->name }}</h4>
-                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Admin</p>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ $user->roles->first()->name ?? 'No Role' }}</p>
                                 </div>
                             </div>
                         </td>
@@ -96,9 +96,14 @@
                             <span class="text-sm font-medium text-slate-600">{{ $user->email }}</span>
                         </td>
                         <td class="px-6 py-5">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 rounded-full text-[10px] font-bold uppercase tracking-tight border border-red-100">
-                                <i data-lucide="shield" class="w-3 h-3"></i>
-                                Admin
+                            @php
+                                $role = $user->roles->first()->name ?? 'Admin';
+                                $roleColor = $role === 'Super Admin' ? 'bg-blue-50 text-blue-600 border-blue-100' : ($role === 'Admin' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-600 border-slate-100');
+                                $roleIcon = $role === 'Super Admin' ? 'shield-check' : 'shield';
+                            @endphp
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 {{ $roleColor }} rounded-full text-[10px] font-bold uppercase tracking-tight border">
+                                <i data-lucide="{{ $roleIcon }}" class="w-3 h-3"></i>
+                                {{ $role }}
                             </span>
                         </td>
                         <td class="px-6 py-5">
@@ -131,21 +136,30 @@
         <h3 class="text-sm font-bold text-slate-700">Deskripsi Role</h3>
         <div class="flex flex-col gap-6">
             <div class="flex gap-4 items-start">
-                <div class="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center shrink-0">
+                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                 </div>
                 <div>
+                    <h4 class="text-sm font-bold text-slate-800">Super Admin</h4>
+                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke semua fitur termasuk manajemen pengguna, inventaris, dan pengaturan sistem tingkat lanjut.</p>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center shrink-0">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                </div>
+                <div>
                     <h4 class="text-sm font-bold text-slate-800">Admin</h4>
-                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke semua fitur termasuk manajemen pengguna, inventaris, dan pengaturan sistem.</p>
+                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke manajemen inventaris dan operasional harian.</p>
                 </div>
             </div>
             <div class="flex gap-4 items-start opacity-50 grayscale">
-                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
-                    <i data-lucide="eye" class="w-4 h-4"></i>
+                <div class="w-8 h-8 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center shrink-0">
+                    <i data-lucide="users" class="w-4 h-4"></i>
                 </div>
                 <div>
-                    <h4 class="text-sm font-bold text-slate-800">User (Disabled)</h4>
-                    <p class="text-xs text-slate-500 mt-1">Hanya dapat melihat data inventaris tanpa bisa melakukan perubahan.</p>
+                    <h4 class="text-sm font-bold text-slate-800">Customer</h4>
+                    <p class="text-xs text-slate-500 mt-1">Akses terbatas untuk melihat ketersediaan barang.</p>
                 </div>
             </div>
         </div>

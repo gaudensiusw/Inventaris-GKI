@@ -108,10 +108,6 @@
             </a>
             @endif
 
-            <a href="{{ route('setting.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('setting.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
-                <i data-lucide="settings" class="w-5 h-5 {{ request()->routeIs('setting.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
-                <span class="font-bold">Pengaturan</span>
-            </a>
         </div>
     </nav>
 

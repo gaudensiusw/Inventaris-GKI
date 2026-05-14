@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\BorrowingController;
 use App\Http\Controllers\Admin\RepairController;
 use App\Http\Controllers\Admin\SpecialStatusController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StockOpnameController;
 use App\Http\Controllers\Admin\DisposalController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -75,7 +74,6 @@ Route::prefix('admin')->middleware(['auth', 'role:Super Admin,Admin'])->group(fu
     Route::get('/disposal', [DisposalController::class, 'index'])->name('disposal.index');
     Route::post('/disposal/{id}/restore', [DisposalController::class, 'restore'])->name('disposal.restore');
 
-    Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
 });
 
 // ============================================================
