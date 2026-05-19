@@ -104,7 +104,7 @@
                                             <i data-lucide="qr-code" class="w-3 h-3 text-blue-400"></i>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/qr:block z-50 animate-in fade-in zoom-in duration-200">
                                                 <div class="p-2 bg-white rounded-xl shadow-2xl border border-slate-100">
-                                                    {!! QrCode::size(120)->generate($item->kode_aset) !!}
+                                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate($item->kode_aset) !!}
                                                 </div>
                                             </div>
                                         </span>
@@ -157,7 +157,7 @@
                                 <button onclick="printLabel({{ json_encode($item) }})" class="p-2 hover:bg-emerald-50 text-emerald-500 rounded-lg transition-colors" title="Print Label QR"><i data-lucide="printer" class="w-4 h-4"></i></button>
                                 <button onclick="viewItem({{ json_encode($item) }})" class="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                 <button onclick="editItem({{ json_encode($item) }})" class="p-2 hover:bg-slate-100 text-slate-400 rounded-lg transition-colors"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                <form action="{{ route('inventory.destroy', $item->id) }}" method="POST" onsubmit="return confirmSubmit(this, { title: 'Hapus Barang?', message: 'Barang akan dipindahkan ke daftar penghapusan dan tidak tampil di inventaris aktif.', color: 'red', icon: 'trash-2' })">
+                                <form action="{{ route('inventory.destroy', $item->id) }}" method="POST" onsubmit="return confirmSubmit(this, { title: 'Hapus Barang?', message: 'Barang akan dipindahkan ke daftar penghapusan dan tidak tampil di inventaris aktif.', color: 'red', icon: 'trash-2', requireReason: true })">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-100">

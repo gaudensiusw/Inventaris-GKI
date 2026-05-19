@@ -47,7 +47,7 @@
     <script>
         let confirmCallback = null;
 
-        function showConfirm({ title, message, icon, color, confirmText, onConfirm }) {
+        function showConfirm({ title, message, icon, color, confirmText, requireReason, onConfirm }) {
             const modal = document.getElementById('confirmModal');
             const content = document.getElementById('confirmModalContent');
             const iconContainer = document.getElementById('confirmIconContainer');
@@ -55,12 +55,21 @@
             const titleEl = document.getElementById('confirmTitle');
             const messageEl = document.getElementById('confirmMessage');
             const btn = document.getElementById('confirmBtn');
+            const reasonContainer = document.getElementById('confirmReasonContainer');
+            const reasonInput = document.getElementById('confirmReasonInput');
 
             if (!modal) return;
 
             titleEl.innerText = title || 'Konfirmasi';
             messageEl.innerText = message || 'Apakah Anda yakin?';
             btn.innerText = confirmText || 'Ya, Lanjutkan';
+            
+            if (requireReason) {
+                reasonContainer.classList.remove('hidden');
+                reasonInput.value = '';
+            } else {
+                reasonContainer.classList.add('hidden');
+            }
             
             const themeColor = color || 'blue';
             
@@ -97,7 +106,18 @@
             
             if (window.lucide) lucide.createIcons();
 
-            confirmCallback = onConfirm;
+            confirmCallback = () => {
+                let reason = null;
+                if (requireReason) {
+                    reason = reasonInput.value.trim();
+                    if (!reason) {
+                        alert('Alasan harus diisi!');
+                        return false;
+                    }
+                }
+                onConfirm(reason);
+                return true;
+            };
             
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -125,7 +145,17 @@
                 icon: options.icon || 'alert-triangle',
                 color: options.color || 'blue',
                 confirmText: options.confirmText || 'Ya, Lanjutkan',
-                onConfirm: () => form.submit()
+                requireReason: options.requireReason || false,
+                onConfirm: (reason) => {
+                    if (options.requireReason && reason) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'delete_reason';
+                        input.value = reason;
+                        form.appendChild(input);
+                    }
+                    form.submit();
+                }
             });
             return false;
         }
@@ -201,6 +231,10 @@
                     <h3 id="confirmTitle" class="text-xl font-black text-slate-800 tracking-tight">Konfirmasi Tindakan</h3>
                     <p id="confirmMessage" class="text-slate-500 text-sm mt-2">Apakah Anda yakin ingin melakukan tindakan ini? Data yang dihapus tidak dapat dikembalikan.</p>
                 </div>
+                <div id="confirmReasonContainer" class="w-full hidden text-left flex flex-col gap-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Alasan Penghapusan <span class="text-red-500">*</span></label>
+                    <textarea id="confirmReasonInput" rows="2" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:border-red-400 transition-all font-medium text-sm shadow-sm" placeholder="Masukkan alasan penghapusan barang..."></textarea>
+                </div>
                 <div class="flex gap-3 w-full">
                     <button onclick="closeConfirmModal()" class="flex-1 px-6 py-4 bg-slate-100 text-slate-600 rounded-2xl text-xs font-black uppercase hover:bg-slate-200 transition-all">Batal</button>
                     <button id="confirmBtn" class="flex-[2] px-6 py-4 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all">Ya, Lanjutkan</button>
@@ -216,7 +250,8 @@
                 confirmBtn.onclick = function() {
                     console.log('Confirm button clicked, executing callback...');
                     if (typeof confirmCallback === 'function') {
-                        confirmCallback();
+                        const result = confirmCallback();
+                        if (result === false) return; // Callback can prevent closing
                     }
                     closeConfirmModal();
                 };

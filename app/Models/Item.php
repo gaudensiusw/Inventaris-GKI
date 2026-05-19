@@ -37,13 +37,20 @@ class Item extends Model
         'purchase_date',
         'description',
         'keterangan',
-        'is_write_off'
+        'is_write_off',
+        'deleted_by',
+        'delete_reason'
     ];
 
     protected $casts = [
         'purchase_date' => 'date',
         'is_write_off' => 'boolean',
     ];
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
 
     public function category()
     {

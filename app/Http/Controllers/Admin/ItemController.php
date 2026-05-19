@@ -145,10 +145,13 @@ class ItemController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         try {
             $item = Item::findOrFail($id);
+            $item->deleted_by = auth()->id();
+            $item->delete_reason = $request->input('delete_reason', 'Tanpa alasan');
+            $item->save();
             $item->delete(); // This will soft delete because of the SoftDeletes trait
             
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil dipindahkan ke daftar penghapusan.');

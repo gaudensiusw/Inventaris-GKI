@@ -19,6 +19,7 @@
                         <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Barang</th>
                         <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tanggal Dihapus</th>
                         <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kategori & Lokasi</th>
+                        <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Keterangan</th>
                         <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -38,6 +39,12 @@
                             <div class="flex flex-col gap-1">
                                 <span class="text-xs font-bold text-slate-700">{{ $disposal->category->name ?? '-' }}</span>
                                 <span class="text-[10px] text-slate-500">{{ $disposal->room->name ?? '-' }}</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5">
+                            <div class="flex flex-col gap-1 max-w-[200px]">
+                                <span class="text-xs font-bold text-red-600 inline-flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> {{ $disposal->deletedBy->name ?? 'Sistem' }}</span>
+                                <span class="text-[10px] text-slate-500 italic line-clamp-2" title="{{ $disposal->delete_reason }}">{{ $disposal->delete_reason ?? 'Tanpa alasan' }}</span>
                             </div>
                         </td>
                         <td class="px-8 py-5 text-right">
@@ -64,7 +71,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-8 py-20 text-center">
+                        <td colspan="5" class="px-8 py-20 text-center">
                             <div class="flex flex-col items-center gap-3 text-slate-300">
                                 <i data-lucide="trash-2" class="w-12 h-12"></i>
                                 <p class="text-sm font-bold uppercase tracking-widest">Belum ada data penghapusan.</p>
