@@ -39,6 +39,18 @@
                             <span class="hidden sm:inline">Form Peminjaman</span>
                         </span>
                     </a>
+                    <a href="{{ route('user.katalog.rooms') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('user.katalog.rooms*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Lokasi</span>
+                        </span>
+                    </a>
+                    <a href="{{ route('user.katalog.qr-scanner') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('user.katalog.qr-scanner') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="scan" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Scan QR</span>
+                        </span>
+                    </a>
                     <a href="{{ route('user.orders.status') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('user.orders.status') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
                         <span class="flex items-center gap-2">
                             <i data-lucide="search" class="w-4 h-4"></i>

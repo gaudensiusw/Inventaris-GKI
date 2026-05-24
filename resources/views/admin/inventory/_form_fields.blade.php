@@ -30,8 +30,8 @@
                 <select name="room_id" required
                     class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
                     <option value="">Pilih Lokasi</option>
-                    @foreach($rooms as $room)
-                        <option value="{{ $room->id }}" {{ old('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                    @foreach($rooms as $roomOption)
+                        <option value="{{ $roomOption->id }}" {{ old('room_id', $activeRoomId ?? '') == $roomOption->id ? 'selected' : '' }}>{{ $roomOption->name }}</option>
                     @endforeach
                 </select>
             </div>

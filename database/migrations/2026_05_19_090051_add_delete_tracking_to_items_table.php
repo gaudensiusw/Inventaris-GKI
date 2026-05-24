@@ -6,25 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('delete_reason')->nullable();
-        });
+        if (Schema::hasTable('items')) {
+            Schema::table('items', function (Blueprint $table) {
+                if (!Schema::hasColumn('items', 'deleted_by')) {
+                    $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+                }
+                if (!Schema::hasColumn('items', 'delete_reason')) {
+                    $table->string('delete_reason')->nullable();
+                }
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->dropForeign(['deleted_by']);
-            $table->dropColumn(['deleted_by', 'delete_reason']);
-        });
+        if (Schema::hasTable('items')) {
+            Schema::table('items', function (Blueprint $table) {
+                $table->dropForeign(['deleted_by']);
+                $table->dropColumn(['deleted_by', 'delete_reason']);
+            });
+        }
     }
 };

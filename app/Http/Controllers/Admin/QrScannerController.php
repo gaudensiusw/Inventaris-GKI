@@ -35,7 +35,7 @@ class QrScannerController extends Controller
                     'condition' => $item->condition,
                     'category' => $item->category->name ?? 'Tanpa Kategori',
                     'room' => $item->room->name ?? 'Tanpa Ruangan',
-                    'image_url' => $item->image ? asset('storage/' . $item->image) : null,
+                    'image_url' => $item->image_url,
                 ],
                 'redirect_url' => route('inventory.index', ['search' => $item->kode_aset])
             ]);

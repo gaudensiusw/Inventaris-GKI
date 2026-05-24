@@ -26,6 +26,14 @@
                         <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                         Form Peminjaman
                     </a>
+                    <a href="{{ route('user.katalog.rooms') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        Lokasi
+                    </a>
+                    <a href="{{ route('user.katalog.qr-scanner') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">
+                        <i data-lucide="scan" class="w-4 h-4"></i>
+                        Scan QR
+                    </a>
                     <a href="{{ route('user.orders.status') }}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition-all">
                         <i data-lucide="search" class="w-4 h-4"></i>
                         Cek Status
@@ -36,6 +44,8 @@
             <!-- Mobile nav -->
             <div class="sm:hidden flex gap-2 pb-3">
                 <a href="{{ route('user.katalog.index') }}" class="flex-1 text-center py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold">Form Peminjaman</a>
+                <a href="{{ route('user.katalog.rooms') }}" class="flex-1 text-center py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Lokasi</a>
+                <a href="{{ route('user.katalog.qr-scanner') }}" class="flex-1 text-center py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Scan QR</a>
                 <a href="{{ route('user.orders.status') }}" class="flex-1 text-center py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Cek Status</a>
             </div>
         </div>
@@ -72,11 +82,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             @forelse($items as $item)
             <div class="bg-white rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all p-6 flex flex-col gap-6 overflow-hidden relative group">
-                <!-- Image Placeholder -->
-                <div class="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200 overflow-hidden relative">
-                    <i data-lucide="image" class="w-12 h-12"></i>
-                    <div class="absolute top-4 right-4">
-                        <span class="px-3 py-1 bg-white/90 backdrop-blur-md text-[10px] font-black uppercase text-slate-600 rounded-full border border-slate-100">{{ $item->category->name ?? 'Aset' }}</span>
+                <!-- Image Container -->
+                <div class="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden relative border border-slate-100/50">
+                    @if($item->getItemImage())
+                        <img src="{{ $item->getItemImage() }}" alt="{{ $item->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    @else
+                        <!-- Elegant Placeholder Gradient with Icon -->
+                        <div class="w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col items-center justify-center gap-2 text-slate-400">
+                            <i data-lucide="{{ $item->category->icon ?? 'package' }}" class="w-12 h-12 text-slate-300"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-slate-450">No Image</span>
+                        </div>
+                    @endif
+                    <div class="absolute top-4 right-4 pointer-events-none">
+                        <span class="px-3 py-1 bg-white/90 backdrop-blur-md text-[10px] font-black uppercase text-blue-600 rounded-full border border-slate-100 shadow-sm">{{ $item->category->name ?? 'Aset' }}</span>
                     </div>
                 </div>
 

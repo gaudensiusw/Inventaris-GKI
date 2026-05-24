@@ -40,7 +40,9 @@ Route::prefix('admin')->middleware(['auth', 'role:Super Admin,Admin'])->group(fu
     Route::put('/inventory/{id}', [ItemController::class, 'update'])->name('inventory.update');
     
     Route::get('/room', [RoomController::class, 'index'])->name('room.index');
+    Route::get('/room/{id}', [RoomController::class, 'show'])->name('room.show');
     Route::put('/room/{id}', [RoomController::class, 'update'])->name('room.update');
+    Route::post('/room/{id}/bulk-move', [RoomController::class, 'bulkMove'])->name('room.bulk-move');
     
     Route::get('/stock-opname', [StockOpnameController::class, 'index'])->name('stock-opname.index');
     Route::get('/stock-opname/create', [StockOpnameController::class, 'create'])->name('stock-opname.create');
@@ -106,6 +108,14 @@ Route::prefix('admin')->middleware(['auth', 'role:Super Admin'])->group(function
 Route::prefix('peminjaman')->name('user.')->group(function () {
     // Katalog barang publik
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
+    
+    // Lokasi penyimpanan publik
+    Route::get('/lokasi', [KatalogController::class, 'rooms'])->name('katalog.rooms');
+    Route::get('/lokasi/{id}', [KatalogController::class, 'roomShow'])->name('katalog.rooms.show');
+    
+    // Public QR Scanner
+    Route::get('/scan', [KatalogController::class, 'qrScanner'])->name('katalog.qr-scanner');
+    Route::post('/scan/search', [KatalogController::class, 'qrSearch'])->name('katalog.qr-search');
     
     // Form request peminjaman
     Route::get('/request/{itemId}', [OrderController::class, 'create'])->name('orders.create');

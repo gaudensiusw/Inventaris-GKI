@@ -21,6 +21,11 @@ return new class extends Migration
                 $table->foreignId('id_user')->nullable()->constrained('users')->nullOnDelete();
                 $table->string('status_pinjam')->default('Dipinjam');
                 $table->text('catatan')->nullable();
+                
+                $table->integer('qty_kembali')->nullable();
+                $table->string('kondisi_kembali', 50)->nullable();
+                $table->text('catatan_kembali')->nullable();
+                
                 $table->timestamps();
             });
         }

@@ -39,4 +39,67 @@ class KatalogController extends Controller
 
         return view('user.katalog.index', compact('items', 'categories', 'rooms', 'search', 'categoryId', 'roomId'));
     }
+
+    public function rooms(Request $request)
+    {
+        $search = $request->get('search');
+        $query = Room::withCount('items')->orderBy('name');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $rooms = $query->get();
+        return view('user.katalog.rooms', compact('rooms', 'search'));
+    }
+
+    public function roomShow($id)
+    {
+        $room = Room::withCount('items')->findOrFail($id);
+        $items = $room->items()->with(['category'])->get();
+        return view('user.katalog.room_show', compact('room', 'items'));
+    }
+
+    public function qrScanner()
+    {
+        $recentItems = Item::latest()->take(5)->get();
+        return view('user.katalog.qr_scanner', compact('recentItems'));
+    }
+
+    public function qrSearch(Request $request)
+    {
+        $request->validate(['code' => 'required|string|max:50']);
+        $code = $request->code;
+        $item = Item::where('kode_aset', $code)
+            ->orWhere('barcode', $code)
+            ->orWhere('entno', $code)
+            ->first();
+
+        if ($item) {
+            $item->load(['category', 'room']);
+            return response()->json([
+                'success' => true,
+                'item' => [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'kode_aset' => $item->kode_aset,
+                    'quantity' => $item->quantity,
+                    'status' => $item->status,
+                    'condition' => $item->condition,
+                    'category' => $item->category->name ?? 'Tanpa Kategori',
+                    'room' => $item->room->name ?? 'Tanpa Ruangan',
+                    'image_url' => $item->image_url,
+                ],
+                'redirect_url' => route('user.orders.create', $item->id)
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Barang dengan kode tersebut tidak ditemukan.'
+        ]);
+    }
 }

@@ -50,10 +50,20 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($rooms as $room)
         <div class="card-premium p-0 border border-slate-200 group relative overflow-hidden flex flex-col shadow-card hover:shadow-xl transition-all duration-300">
+            <!-- Actions on top of card (z-30 to stack above the z-20 overlay link) -->
+            <div class="absolute top-4 right-4 flex gap-2 z-30">
+                <button onclick="editRoom({{ $room->id }}, '{{ $room->name }}', '{{ $room->description }}', '{{ $room->getRoomImage() ?? '' }}')" class="p-2 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-white hover:text-blue-600 rounded-xl transition-all shadow-lg border border-white/50">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+                <button onclick="confirmDeleteRoom({{ $room->id }}, '{{ $room->name }}')" class="p-2 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-lg border border-white/50">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+
             <!-- Room Image -->
             <div class="relative h-48 w-full overflow-hidden">
-                @if($room->image)
-                    <img src="{{ asset('storage/' . $room->image) }}" alt="{{ $room->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                @if($room->getRoomImage())
+                    <img src="{{ $room->getRoomImage() }}" alt="{{ $room->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                 @else
                     <div class="w-full h-full bg-slate-200 flex flex-col items-center justify-center text-slate-500 gap-2">
                         <i data-lucide="image" class="w-10 h-10 opacity-40"></i>
@@ -61,16 +71,6 @@
                     </div>
                 @endif
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-40"></div>
-                
-                <!-- Actions on top of image -->
-                <div class="absolute top-4 right-4 flex gap-2">
-                    <button onclick="editRoom({{ $room->id }}, '{{ $room->name }}', '{{ $room->description }}', '{{ $room->image ? asset('storage/' . $room->image) : '' }}')" class="p-2 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-white hover:text-blue-600 rounded-xl transition-all shadow-lg border border-white/50">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="confirmDeleteRoom({{ $room->id }}, '{{ $room->name }}')" class="p-2 bg-white/80 backdrop-blur-sm text-slate-700 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-lg border border-white/50">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                </div>
             </div>
 
             <div class="p-6 flex-1 flex flex-col bg-white">
@@ -89,6 +89,9 @@
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Area Inventaris</span>
                 </div>
             </div>
+            
+            <!-- Clickable Card Link covering everything -->
+            <a href="{{ route('room.show', $room->id) }}" class="absolute inset-0 z-20"></a>
         </div>
         @empty
         <div class="col-span-full py-20 flex flex-col items-center justify-center text-center bg-white rounded-[32px] border-2 border-dashed border-slate-100">

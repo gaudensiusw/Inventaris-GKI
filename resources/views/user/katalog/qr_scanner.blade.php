@@ -1,42 +1,41 @@
-@extends('layouts.master')
+@extends('layouts.user')
 
 @section('content')
-    <div class="flex flex-col gap-8">
+    <div class="space-y-6">
+        <!-- Back Link -->
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors font-semibold">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            Kembali ke Beranda
+        </a>
+
         <!-- Header Section -->
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">QR Code Scanner</h1>
-            <p class="text-slate-500 text-sm mt-1">Scan QR code barang atau masukkan kode secara manual untuk melihat
-                detail.</p>
+            <h1 class="text-2xl font-black text-slate-800">QR Code Scanner</h1>
+            <p class="text-slate-500 text-sm mt-1">Pindai QR code pada label barang inventaris untuk melihat informasi dan mengajukan peminjaman secara instan.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Left: Camera Section -->
             <div class="flex flex-col gap-6">
-                <div
-                    class="card-premium shadow-card p-6 overflow-hidden relative min-h-[400px] flex flex-col items-center justify-center bg-slate-900 border-none group">
-                    <!-- Camera Feed Placeholder / Container -->
+                <div class="bg-slate-900 rounded-[32px] overflow-hidden relative min-h-[400px] flex flex-col items-center justify-center border-none shadow-md group">
+                    <!-- Camera Feed Container -->
                     <div id="reader" class="w-full h-full absolute inset-0 z-10 opacity-0 transition-opacity duration-500">
                     </div>
 
                     <!-- UI Overlay when camera is off -->
                     <div id="camera-placeholder" class="z-0 flex flex-col items-center gap-4 text-center p-8">
-                        <div
-                            class="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center text-white/50 backdrop-blur-md mb-2">
+                        <div class="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center text-white/50 backdrop-blur-md mb-2">
                             <i data-lucide="camera" class="w-10 h-10"></i>
                         </div>
                         <h3 class="text-white font-bold text-lg">Kamera Belum Aktif</h3>
-                        <p class="text-white/40 text-sm max-w-[250px]">Klik tombol di bawah untuk mengaktifkan scanner
-                            kamera.</p>
+                        <p class="text-white/40 text-sm max-w-[250px]">Klik tombol di bawah untuk mengaktifkan scanner kamera HP Anda.</p>
                     </div>
 
-                    <!-- Scanning Animation (Hidden by default) -->
+                    <!-- Scanning Animation -->
                     <div id="scanner-overlay" class="hidden absolute inset-0 z-20 pointer-events-none">
                         <div class="absolute inset-0 border-[40px] border-black/40"></div>
-                        <div
-                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-blue-500 rounded-3xl shadow-[0_0_50px_rgba(59,130,246,0.5)]">
-                            <div
-                                class="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,1)] animate-scan">
-                            </div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-blue-500 rounded-3xl shadow-[0_0_50px_rgba(59,130,246,0.5)]">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,1)] animate-scan"></div>
                         </div>
                     </div>
                 </div>
@@ -45,8 +44,7 @@
                     <i data-lucide="aperture" class="w-5 h-5 group-hover:rotate-90 transition-transform duration-500"></i>
                     <span class="font-bold">Buka Kamera Scanner</span>
                 </button>
-                <button id="stop-btn"
-                    class="hidden px-4 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-xl shadow-red-200 flex items-center justify-center gap-2">
+                <button id="stop-btn" class="hidden px-4 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-xl shadow-red-200 flex items-center justify-center gap-2">
                     <i data-lucide="camera-off" class="w-5 h-5"></i>
                     <span>Matikan Kamera</span>
                 </button>
@@ -55,37 +53,32 @@
             <!-- Right: Manual Input & Info -->
             <div class="flex flex-col gap-6">
                 <!-- Manual Search Card -->
-                <div class="card-premium shadow-card p-8 flex flex-col gap-6">
+                <div class="bg-white rounded-[32px] border border-slate-100 shadow-sm p-8 flex flex-col gap-6">
                     <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
                         <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
                             <i data-lucide="keyboard" class="w-5 h-5"></i>
                         </div>
-                        <h3 class="font-bold text-slate-700">Input Manual</h3>
+                        <h3 class="font-bold text-slate-750">Input Kode Manual</h3>
                     </div>
 
                     <div class="flex flex-col gap-4">
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Masukkan Kode
-                            Barang</label>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Masukkan Kode Barang</label>
                         <div class="relative group">
-                            <i data-lucide="hash"
-                                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
-                            <input type="text" id="manual-code" placeholder="Contoh: INV-001"
+                            <i data-lucide="hash" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                            <input type="text" id="manual-code" placeholder="Contoh: 10001"
                                 class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all font-bold text-slate-700">
                         </div>
-                        <button id="search-btn"
-                            class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-lg flex items-center justify-center gap-2">
+                        <button id="search-btn" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-lg flex items-center justify-center gap-2">
                             <i data-lucide="search" class="w-5 h-5"></i>
                             <span>Cari Barang</span>
                         </button>
                     </div>
 
                     <div class="flex flex-col gap-3 pt-2">
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Kode Tersedia Baru-baru
-                            Ini</label>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Kode Barang Terbaru</label>
                         <div class="flex flex-wrap gap-2">
                             @foreach($recentItems as $item)
-                                <button
-                                    onclick="document.getElementById('manual-code').value='{{ $item->kode_aset ?? $item->entno }}'"
+                                <button onclick="document.getElementById('manual-code').value='{{ $item->kode_aset ?? $item->entno }}'"
                                     class="px-3 py-1.5 bg-slate-100 hover:bg-blue-100 hover:text-blue-600 rounded-lg text-xs font-bold text-slate-500 transition-all">
                                     {{ $item->kode_aset ?? $item->entno }}
                                 </button>
@@ -95,30 +88,24 @@
                 </div>
 
                 <!-- Instructions Card -->
-                <div class="card-premium shadow-card p-8 bg-blue-600 text-white border-none relative overflow-hidden">
+                <div class="bg-blue-650 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[32px] p-8 text-white relative overflow-hidden shadow-lg">
                     <div class="relative z-10 flex flex-col gap-4">
                         <div class="flex items-center gap-3">
                             <i data-lucide="info" class="w-6 h-6 text-blue-200"></i>
-                            <h3 class="font-bold text-lg">Cara Penggunaan</h3>
+                            <h3 class="font-bold text-lg">Panduan Peminjaman via QR</h3>
                         </div>
                         <ul class="space-y-4">
                             <li class="flex gap-4 items-start">
-                                <span
-                                    class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold shrink-0">1</span>
-                                <p class="text-sm text-blue-50 font-medium">Klik <b>Buka Kamera</b> dan berikan izin akses
-                                    browser.</p>
+                                <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                                <p class="text-sm text-blue-50 font-medium">Aktifkan kamera dengan menekan tombol <b>Buka Kamera</b>.</p>
                             </li>
                             <li class="flex gap-4 items-start">
-                                <span
-                                    class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold shrink-0">2</span>
-                                <p class="text-sm text-blue-50 font-medium">Arahkan kamera ke QR Code barang hingga
-                                    terdeteksi otomatis.</p>
+                                <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                                <p class="text-sm text-blue-50 font-medium">Arahkan kamera ke label stiker QR barang di ruangan gereja.</p>
                             </li>
                             <li class="flex gap-4 items-start">
-                                <span
-                                    class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold shrink-0">3</span>
-                                <p class="text-sm text-blue-50 font-medium">Atau ketik kode barang secara manual jika QR
-                                    code rusak.</p>
+                                <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                                <p class="text-sm text-blue-50 font-medium">Setelah deteksi sukses, informasi barang akan muncul di layar. Klik tombol <b>"Ajukan Peminjaman"</b> untuk mengisi form pesan.</p>
                             </li>
                         </ul>
                     </div>
@@ -133,11 +120,9 @@
     <div id="preview-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closePreview()"></div>
 
-        <div class="relative bg-white w-full max-w-lg rounded-[32px] shadow-2xl overflow-hidden transform transition-all scale-95 opacity-0 duration-300"
-            id="modal-content">
+        <div class="relative bg-white w-full max-w-lg rounded-[32px] shadow-2xl overflow-hidden transform transition-all scale-95 opacity-0 duration-300" id="modal-content">
              <!-- Modal Header / Image Area -->
-            <div
-                class="relative h-48 bg-gradient-to-br from-blue-600 to-indigo-700 p-8 flex items-end justify-between overflow-hidden">
+            <div class="relative h-48 bg-gradient-to-br from-blue-600 to-indigo-700 p-8 flex items-end justify-between overflow-hidden">
                 <img id="modal-header-bg" src="" class="absolute inset-0 w-full h-full object-cover hidden z-0 opacity-90 transition-all duration-300">
                 <div id="modal-header-overlay" class="absolute inset-0 bg-slate-950/40 hidden z-0"></div>
 
@@ -147,16 +132,14 @@
                 </div>
 
                 <div class="relative z-10">
-                    <div id="modal-category"
-                        class="bg-white/20 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full mb-3 w-fit">
+                    <div id="modal-category" class="bg-white/20 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full mb-3 w-fit">
                         Kategori
                     </div>
-                    <h2 id="modal-item-name" class="text-3xl font-black text-white leading-tight">Nama Barang</h2>
+                    <h2 id="modal-item-name" class="text-2xl font-black text-white leading-tight">Nama Barang</h2>
                 </div>
 
                 <div class="relative z-10 flex flex-col items-end">
-                    <div id="modal-status-badge"
-                        class="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-lg shadow-lg mb-2">
+                    <div id="modal-status-badge" class="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-lg shadow-lg mb-2">
                         Tersedia
                     </div>
                     <div id="modal-asset-code" class="text-blue-100 text-xs font-mono font-bold tracking-wider">
@@ -193,13 +176,11 @@
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col gap-3">
-                    <a id="modal-view-link" href="#"
-                        class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-2">
-                        <i data-lucide="external-link" class="w-5 h-5"></i>
-                        <span>Lihat di Inventaris</span>
+                    <a id="modal-view-link" href="#" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200 flex items-center justify-center gap-2">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        <span>Ajukan Peminjaman Barang</span>
                     </a>
-                    <button onclick="closePreview()"
-                        class="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
+                    <button onclick="closePreview()" class="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
                         <i data-lucide="x" class="w-5 h-5"></i>
                         <span>Tutup & Scan Lagi</span>
                     </button>
@@ -225,9 +206,8 @@
             const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
 
             startBtn.addEventListener('click', () => {
-                console.log("Starting scanner...");
+                console.log("Starting public scanner...");
 
-                // Initialize scanner if not already done
                 try {
                     if (!html5QrCode) {
                         html5QrCode = new Html5Qrcode("reader");
@@ -245,15 +225,14 @@
                         (decodedText, decodedResult) => {
                             console.log("Code detected:", decodedText);
                             handleScan(decodedText);
-                            // Stop scanning after success
                             stopBtn.click();
                         },
                         (errorMessage) => {
-                            // Scan logic
+                            // scan loop
                         }
                     ).catch((err) => {
                         console.error("Camera start failed:", err);
-                        alert("Gagal mengaktifkan kamera: " + err + "\n\nCatatan: Scanner memerlukan izin kamera dan biasanya hanya berfungsi pada koneksi aman (HTTPS) atau localhost.");
+                        alert("Gagal mengaktifkan kamera: " + err + "\n\nCatatan: Pastikan Anda memberikan izin akses kamera dan mengakses situs menggunakan HTTPS.");
                         resetUI();
                     });
                 } catch (e) {
@@ -279,7 +258,6 @@
             searchBtn.addEventListener('click', () => {
                 const code = manualInput.value.trim();
                 if (code) {
-                    console.log("Searching manually for:", code);
                     handleScan(code);
                 } else {
                     alert("Silakan masukkan kode barang.");
@@ -293,12 +271,11 @@
             });
 
             function handleScan(code) {
-                // Show loading state
                 searchBtn.disabled = true;
                 searchBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Mencari...</span>';
                 lucide.createIcons();
 
-                fetch('{{ route("qr-scanner.search") }}', {
+                fetch('{{ route("user.katalog.qr-search") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -309,7 +286,7 @@
                 })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error('Network response was not ok: ' + response.statusText);
+                            throw new Error('Network response was not ok');
                         }
                         return response.json();
                     })
@@ -330,7 +307,6 @@
             }
 
             function showPreview(item, redirectUrl) {
-                // Populate modal
                 document.getElementById('modal-item-name').innerText = item.name;
                 document.getElementById('modal-asset-code').innerText = item.kode_aset;
                 document.getElementById('modal-category').innerText = item.category;
@@ -340,7 +316,6 @@
                 document.getElementById('modal-status-badge').innerText = item.status;
                 document.getElementById('modal-view-link').href = redirectUrl;
 
-                // Handle badge color
                 const badge = document.getElementById('modal-status-badge');
                 if (item.status === 'Tersedia') {
                     badge.className = 'bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-lg shadow-lg mb-2';
@@ -348,7 +323,6 @@
                     badge.className = 'bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-lg shadow-lg mb-2';
                 }
 
-                // Handle image
                 const headerBg = document.getElementById('modal-header-bg');
                 const headerOverlay = document.getElementById('modal-header-overlay');
                 if (item.image_url) {
@@ -361,7 +335,6 @@
                     headerOverlay.classList.add('hidden');
                 }
 
-                // Show modal
                 const modal = document.getElementById('preview-modal');
                 const content = document.getElementById('modal-content');
 
@@ -404,25 +377,12 @@
 
     <style>
         @keyframes scan {
-
-            0%,
-            100% {
-                top: 0;
-            }
-
-            50% {
-                top: 100%;
-            }
+            0%, 100% { top: 0; }
+            50% { top: 100%; }
         }
-
         .animate-scan {
             position: absolute;
             animation: scan 2s infinite ease-in-out;
-        }
-
-        /* Styling library-injected buttons if they appear */
-        #reader button {
-            @apply px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs hover:bg-slate-900 transition-all !important;
         }
     </style>
 @endsection

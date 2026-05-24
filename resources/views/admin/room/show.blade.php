@@ -2,30 +2,60 @@
 
 @section('content')
 <div class="flex flex-col gap-8">
-    <!-- Header Section -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Inventaris</h1>
-            <p class="text-slate-500 text-sm mt-1">{{ $items->total() }} barang ditemukan</p>
+    <!-- Back Link & Header -->
+    <div class="flex flex-col gap-4">
+        <a href="{{ route('room.index') }}" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors font-bold w-fit">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            Kembali ke Lokasi Penyimpanan
+        </a>
+
+        <!-- Room Premium Card Banner -->
+        <div class="card-premium p-0 border border-slate-200 overflow-hidden relative min-h-[220px] flex flex-col justify-end shadow-card rounded-[32px] group">
+            <!-- Room Image Background -->
+            @if($room->getRoomImage())
+                <img src="{{ $room->getRoomImage() }}" alt="{{ $room->name }}" class="absolute inset-0 w-full h-full object-cover z-0">
+            @else
+                <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 z-0 flex items-center justify-center">
+                    <i data-lucide="map-pin" class="w-20 h-20 text-white/5 opacity-10"></i>
+                </div>
+            @endif
+            <!-- Dark Blur Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent z-10"></div>
+
+            <!-- Content Area inside image banner -->
+            <div class="relative z-20 p-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 w-full">
+                <div class="flex flex-col gap-2">
+                    <span class="px-3.5 py-1 bg-white/20 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full w-fit">
+                        Detail Ruangan
+                    </span>
+                    <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">{{ $room->name }}</h1>
+                    <p class="text-white/60 text-sm max-w-xl font-medium leading-relaxed">{{ $room->description ?? 'Tidak ada deskripsi lokasi' }}</p>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0">
+                    <span class="px-4 py-2.5 bg-white/10 backdrop-blur-md text-white rounded-2xl text-xs font-bold border border-white/10">
+                        Total: <b>{{ $items->count() }}</b> jenis barang
+                    </span>
+                    @if($allItems->count() > 0)
+                    <button onclick="openModal('bulkMoveModal')" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2" title="Pindahkan seluruh barang di ruangan ini ke lokasi lain secara masal">
+                        <i data-lucide="shuffle" class="w-5 h-5"></i>
+                        <span>Pindahkan Masal</span>
+                    </button>
+                    @endif
+                    <button onclick="openModal('addItemModal')" class="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                        <span>Tambah Barang di Ruang Ini</span>
+                    </button>
+                </div>
+            </div>
         </div>
-        <button onclick="openModal('addItemModal')" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-black uppercase shadow-xl shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3">
-            <i data-lucide="plus-circle" class="w-6 h-6"></i>
-            <span>Tambah Barang Baru</span>
-        </button>
     </div>
 
-    <!-- Notifications & Validation Errors -->
+    <!-- Alert Notifications -->
     @if(session('success'))
-    <div class="bg-emerald-50 border border-emerald-100 text-emerald-600 px-6 py-4 rounded-2xl flex items-center gap-3 animate-pulse">
+    <div class="bg-emerald-50 border border-emerald-100 text-emerald-600 px-6 py-4 rounded-2xl flex items-center gap-3">
         <i data-lucide="check-circle" class="w-5 h-5"></i>
         <span class="text-sm font-bold">{{ session('success') }}</span>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl flex items-center gap-3">
-        <i data-lucide="alert-circle" class="w-5 h-5"></i>
-        <span class="text-sm font-bold">{{ session('error') }}</span>
     </div>
     @endif
 
@@ -43,39 +73,8 @@
     </div>
     @endif
 
-    <!-- Search & Filter Bar -->
-    <div class="flex flex-wrap gap-4 items-center">
-        <div class="flex-1 min-w-[300px] relative group">
-            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
-            <input type="text" id="search-input" value="{{ $search }}" placeholder="Cari nama barang, ID, atau deskripsi..." 
-                class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all shadow-sm">
-        </div>
-        <div class="flex gap-2">
-            <select onchange="window.location.href = addQueryParam('category_id', this.value)" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none transition-all shadow-sm min-w-[150px]">
-                <option value="">Semua Kategori</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ $categoryId == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                @endforeach
-            </select>
-            <select onchange="window.location.href = addQueryParam('room_id', this.value)" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none transition-all shadow-sm min-w-[150px]">
-                <option value="">Semua Lokasi</option>
-                @foreach($rooms as $room)
-                    <option value="{{ $room->id }}" {{ $roomId == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
-                @endforeach
-            </select>
-            <a href="{{ route('inventory.export') }}" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span>Export</span>
-            </a>
-            <button onclick="printAllLabels()" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
-                <i data-lucide="printer" class="w-4 h-4 text-emerald-500"></i>
-                <span>Cetak Semua Label QR</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Table Section -->
-    <div class="card-premium shadow-card p-0 overflow-hidden print:shadow-none print:border-none">
+    <!-- Items Listing Table inside Room -->
+    <div class="card-premium shadow-card p-0 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -83,9 +82,8 @@
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID / Nama</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kategori</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kondisi</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lokasi</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jumlah</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right print:hidden">Aksi</th>
+                        <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
@@ -135,17 +133,16 @@
                                         <i data-lucide="alert-triangle" class="w-3 h-3"></i> {{ $item->qty_rusak_ringan }} Rusak
                                     </span>
                                 @endif
+                                @if($item->qty_rusak_berat > 0)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 text-red-600 rounded-md text-[10px] font-bold">
+                                        <i data-lucide="x" class="w-3 h-3"></i> {{ $item->qty_rusak_berat }} Rusak Berat
+                                    </span>
+                                @endif
                             </div>
                         </td>
                         <td class="px-6 py-5">
-                            <p class="text-sm text-slate-600 font-medium">{{ $item->room->name }}</p>
-                        </td>
-                        <td class="px-6 py-5">
                             <div class="flex flex-col gap-1">
-                                @php
-                                    $calculatedTotal = $item->qty_baik + $item->qty_rusak_ringan + $item->qty_rusak_berat;
-                                @endphp
-                                <span class="text-sm font-bold text-slate-800">Total: {{ $calculatedTotal }}</span>
+                                <span class="text-sm font-bold text-slate-800">Total: {{ $item->quantity }}</span>
                                 <div class="flex gap-2">
                                     <span class="text-[10px] font-bold text-blue-500 inline-flex items-center gap-1">
                                         <i data-lucide="box" class="w-3 h-3"></i> {{ $item->qty_tersedia }} Tersedia
@@ -159,14 +156,15 @@
                             </div>
                         </td>
                         <td class="px-6 py-5 text-right print:hidden">
-                            <div class="flex justify-end gap-1">
+                            <div class="flex justify-end gap-1 items-center">
                                 <button onclick="printLabel({{ json_encode($item) }})" class="p-2 hover:bg-emerald-50 text-emerald-500 rounded-lg transition-colors" title="Print Label QR"><i data-lucide="printer" class="w-4 h-4"></i></button>
-                                <button onclick="viewItem({{ json_encode($item) }})" class="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                <button onclick="editItem({{ json_encode($item) }})" class="p-2 hover:bg-slate-100 text-slate-400 rounded-lg transition-colors"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                                <form action="{{ route('inventory.destroy', $item->id) }}" method="POST" onsubmit="return confirmSubmit(this, { title: 'Hapus Barang?', message: 'Barang akan dipindahkan ke daftar penghapusan dan tidak tampil di inventaris aktif.', color: 'red', icon: 'trash-2', requireReason: true })">
+                                <button onclick="viewItem({{ json_encode($item) }})" class="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="Detail Barang"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                <button onclick="editItem({{ json_encode($item) }})" class="p-2 hover:bg-slate-100 text-slate-400 rounded-lg transition-colors" title="Edit Barang"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                <form action="{{ route('inventory.destroy', $item->id) }}" method="POST" onsubmit="return confirmSubmit(this, { title: 'Hapus Barang?', message: 'Barang akan dipindahkan ke daftar penghapusan dan tidak tampil di inventaris aktif.', color: 'red', icon: 'trash-2', requireReason: true })" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-100">
+                                    <input type="hidden" name="redirect_to_room" value="{{ $room->id }}">
+                                    <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm shadow-red-100" title="Hapus Barang">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>
                                 </form>
@@ -175,10 +173,10 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
+                        <td colspan="5" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <i data-lucide="inbox" class="w-12 h-12 text-slate-200"></i>
-                                <p class="text-slate-400 font-medium">Belum ada barang di inventaris.</p>
+                                <p class="text-slate-400 font-medium">Belum ada barang di ruangan ini.</p>
                             </div>
                         </td>
                     </tr>
@@ -187,42 +185,108 @@
             </table>
         </div>
     </div>
-
-    <!-- Pagination & Per Page -->
-    @if($items->hasPages() || $items->total() > 10)
-    <div class="flex justify-between items-center bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 mt-8 print:hidden">
-        <div class="flex items-center gap-4">
-            <span class="text-xs font-bold text-slate-400">Tampilkan</span>
-            <select onchange="window.location.href = addQueryParam('per_page', this.value)" class="px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 focus:outline-none">
-                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
-                <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
-            </select>
-        </div>
-        {{ $items->links() }}
-    </div>
-    @endif
 </div>
 
-<script>
-    function addQueryParam(key, value) {
-        const url = new URL(window.location.href);
-        url.searchParams.set(key, value);
-        return url.toString();
-    }
-    document.getElementById('search-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') window.location.href = addQueryParam('search', this.value);
-    });
-</script>
-@endsection
-
 @push('modals')
-<!-- Modal Tambah Barang -->
+<!-- Modal Pindahkan Masal Barang -->
+<div id="bulkMoveModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('bulkMoveModal')"></div>
+    
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative w-full max-w-3xl bg-white rounded-[32px] shadow-2xl transform transition-all overflow-hidden border border-slate-100 flex flex-col">
+            <!-- Modal Header -->
+            <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-200">
+                        <i data-lucide="shuffle" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 tracking-tight">Pindahkan Masal Barang</h2>
+                        <p class="text-xs text-slate-500 font-medium">Kosongkan ruangan "{{ $room->name }}" dengan memindahkan setiap barang ke lokasi baru.</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('bulkMoveModal')" class="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form action="{{ route('room.bulk-move', $room->id) }}" method="POST" class="flex flex-col flex-1">
+                @csrf
+                <!-- Form Body Scrollable -->
+                <div class="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar flex flex-col gap-4">
+                    
+                    <div class="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex gap-3 text-amber-800">
+                        <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                        <div class="flex flex-col gap-1">
+                            <p class="text-xs font-bold leading-relaxed">Pilih lokasi baru untuk setiap barang di bawah ini.</p>
+                            <p class="text-[10px] font-medium leading-relaxed opacity-90">Barang dengan tanda <span class="px-1.5 py-0.5 bg-red-100 text-red-600 rounded font-bold">Disposal</span> adalah barang yang berada di riwayat penghapusan. Mereka juga harus dipindahkan agar ruangan ini bersih sepenuhnya dan bisa dihapus.</p>
+                        </div>
+                    </div>
+
+                    <div class="border border-slate-100 rounded-2xl overflow-hidden mt-2">
+                        <table class="w-full text-left border-collapse text-xs font-medium">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100">
+                                    <th class="px-5 py-3.5 text-slate-400 font-bold uppercase tracking-wider">Nama Barang</th>
+                                    <th class="px-5 py-3.5 text-slate-400 font-bold uppercase tracking-wider text-center">Status</th>
+                                    <th class="px-5 py-3.5 text-slate-400 font-bold uppercase tracking-wider text-center">Jumlah</th>
+                                    <th class="px-5 py-3.5 text-slate-400 font-bold uppercase tracking-wider">Lokasi Baru</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">
+                                @foreach($allItems as $itemOption)
+                                <tr class="hover:bg-slate-50/20 transition-colors">
+                                    <td class="px-5 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-800">{{ $itemOption->name }}</span>
+                                            <span class="text-[10px] text-slate-400 font-bold mt-0.5">{{ $itemOption->kode_aset }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-center">
+                                        @if($itemOption->trashed())
+                                            <span class="px-2 py-0.5 bg-red-100 text-red-600 rounded text-[9px] font-black uppercase tracking-wider">Disposal</span>
+                                        @else
+                                            <span class="px-2 py-0.5 bg-green-100 text-green-600 rounded text-[9px] font-black uppercase tracking-wider">Aktif</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-4 text-center font-bold text-slate-700">
+                                        {{ $itemOption->quantity }}
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <select name="items[{{ $itemOption->id }}]" required
+                                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-400 transition-all font-bold text-slate-700">
+                                            <option value="">-- Pilih Lokasi Baru --</option>
+                                            @foreach($rooms as $targetRoomOption)
+                                                @if($targetRoomOption->id != $room->id)
+                                                    <option value="{{ $targetRoomOption->id }}">{{ $targetRoomOption->name }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Form Footer -->
+                <div class="px-8 py-6 border-t border-slate-50 flex justify-end gap-3 bg-slate-50/50">
+                    <button type="button" onclick="closeModal('bulkMoveModal')" class="px-6 py-3 bg-slate-100 text-slate-500 rounded-2xl text-xs font-black uppercase hover:bg-slate-200 transition-all">Batal</button>
+                    <button type="submit" class="px-8 py-3 bg-amber-500 text-white rounded-2xl text-xs font-black uppercase shadow-xl shadow-amber-200 hover:bg-amber-600 transition-all flex items-center gap-2">
+                        <i data-lucide="shuffle" class="w-4 h-4"></i>
+                        <span>Pindahkan Semua Barang</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Barang (Spesifik Ruangan) -->
 <div id="addItemModal" class="fixed inset-0 z-[100] {{ $errors->any() && !session('is_edit') ? '' : 'hidden' }} overflow-y-auto">
     <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('addItemModal')"></div>
     
     <div class="flex min-h-full items-center justify-center p-4">
-        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl shadow-slate-200/50 transform transition-all overflow-hidden border border-slate-100">
+        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl transform transition-all overflow-hidden border border-slate-100">
             <!-- Modal Header -->
             <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
                 <div class="flex items-center gap-4">
@@ -230,8 +294,8 @@
                         <i data-lucide="plus" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-black text-slate-800 tracking-tight">Tambah Barang Baru</h2>
-                        <p class="text-xs text-slate-500 font-medium">Masukkan detail barang inventaris secara lengkap.</p>
+                        <h2 class="text-xl font-black text-slate-800 tracking-tight">Tambah Barang di {{ $room->name }}</h2>
+                        <p class="text-xs text-slate-500 font-medium">Barang baru otomatis terdaftar di ruangan ini.</p>
                     </div>
                 </div>
                 <button onclick="closeModal('addItemModal')" class="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -239,7 +303,10 @@
 
             <form action="{{ route('inventory.store') }}" method="POST" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 @csrf
-                @include('admin.inventory._form_fields', ['isEdit' => false])
+                <!-- Redirect marker to return to this room view after creation -->
+                <input type="hidden" name="redirect_to_room" value="{{ $room->id }}">
+
+                @include('admin.inventory._form_fields', ['isEdit' => false, 'rooms' => $rooms, 'activeRoomId' => $room->id, 'categories' => $categories])
 
                 <!-- Form Footer -->
                 <div class="mt-8 pt-6 border-t border-slate-50 flex justify-end gap-3">
@@ -277,8 +344,10 @@
             <form id="editForm" action="" method="POST" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 @csrf
                 @method('PUT')
+                <!-- Redirect marker to return to this room view after edit -->
+                <input type="hidden" name="redirect_to_room" value="{{ $room->id }}">
                 <input type="hidden" id="edit_item_id" name="item_id" value="{{ old('item_id', session('edit_item_id')) }}">
-                @include('admin.inventory._form_fields', ['isEdit' => true])
+                @include('admin.inventory._form_fields', ['isEdit' => true, 'rooms' => $rooms, 'categories' => $categories])
 
                 <!-- Form Footer -->
                 <div class="mt-8 pt-6 border-t border-slate-50 flex justify-end gap-3">
@@ -298,14 +367,12 @@
     <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('viewItemModal')"></div>
     
     <div class="flex min-h-full items-center justify-center p-4">
-        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl shadow-slate-200/50 transform transition-all overflow-hidden border border-slate-100 flex flex-col">
+        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl transform transition-all overflow-hidden border border-slate-100 flex flex-col">
             <!-- Top Blue Header -->
             <div class="bg-blue-600 p-8 flex items-center justify-between">
                 <div class="flex items-center gap-6">
                     <div class="flex flex-col items-center gap-2">
-                        <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg p-2" id="view_qr_container">
-                            <!-- QR Code will be injected here -->
-                        </div>
+                        <div class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg p-2" id="view_qr_container"></div>
                         <p class="text-[10px] font-black text-blue-100 uppercase tracking-widest">Scan Me</p>
                     </div>
                     <div>
@@ -320,7 +387,7 @@
                 </div>
             </div>
 
-            <!-- Details Grid -->
+            <!-- Details Body -->
             <div class="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
                 <!-- Item Image Container -->
                 <div id="view_image_container" class="hidden mb-8 w-full h-56 rounded-[24px] overflow-hidden border border-slate-100 shadow-sm relative">
@@ -361,17 +428,6 @@
                         </div>
                     </div>
 
-                    <!-- Tanggal Pembelian -->
-                    <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
-                            <i data-lucide="calendar" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Tanggal Pembelian</p>
-                            <p id="view_tanggal" class="text-slate-800 font-semibold mt-1">-</p>
-                        </div>
-                    </div>
-
                     <!-- Deskripsi -->
                     <div class="flex items-start gap-4 col-span-1 md:col-span-2">
                         <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
@@ -405,32 +461,19 @@
     }
 
     function viewItem(item) {
-        // Populate view modal
+        // Populate modal
         document.getElementById('view_name').innerText = item.name || '-';
         document.getElementById('view_kode').innerText = item.kode_aset || '-';
         document.getElementById('view_tersedia').innerText = 'Tersedia: ' + (item.qty_tersedia || 0);
-        
-        // Update QR Code in View Modal
-        const qrContainer = document.getElementById('view_qr_container');
-        if (item.kode_aset) {
-            // Using an API or a pre-rendered set of QR codes might be complex for JS alone without simple-qrcode being client-side.
-            // But since this is a Blade file, I can't easily generate a NEW QR code for a JS object unless I use a JS library or a route.
-            // However, I can use a small trick: use an image from a route that generates QR.
-            // But wait, simplesoftwareio-qrcode doesn't have a default route.
-            // I'll use a public QR API or better, I'll just show the one already in the table or use a helper.
-            // Actually, I can create a route /admin/qr-generate/{code}
-            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.kode_aset}" class="w-full h-full" alt="QR Code">`;
-        }
-        
         document.getElementById('view_kategori').innerText = (item.category && item.category.name) ? item.category.name : '-';
-        document.getElementById('view_lokasi').innerText = (item.room && item.room.name) ? item.room.name : '-';
-        
-        const totalQty = (item.qty_baik || 0) + (item.qty_rusak_ringan || 0) + (item.qty_rusak_berat || 0);
-        document.getElementById('view_total').innerText = totalQty + ' Unit';
-        
-        document.getElementById('view_tanggal').innerText = item.purchase_date || '-';
+        document.getElementById('view_lokasi').innerText = '{{ $room->name }}';
+        document.getElementById('view_total').innerText = (item.quantity || 0) + ' Unit';
         document.getElementById('view_deskripsi').innerText = item.description || 'Tidak ada deskripsi';
-        
+
+        // QR Code
+        const qrContainer = document.getElementById('view_qr_container');
+        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.kode_aset}" class="w-full h-full" alt="QR Code">`;
+
         // Handle image
         const imgContainer = document.getElementById('view_image_container');
         const imgEl = document.getElementById('view_image');
@@ -478,21 +521,8 @@
                 <head>
                     <title>Print Label - ${item.name}</title>
                     <style>
-                        body { 
-                            font-family: sans-serif; 
-                            display: flex; 
-                            flex-direction: column; 
-                            align-items: center; 
-                            justify-content: center; 
-                            height: 100vh; 
-                            margin: 0; 
-                        }
-                        .label-container { 
-                            text-align: center; 
-                            border: 2px solid #eee; 
-                            padding: 20px; 
-                            border-radius: 10px;
-                        }
+                        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                        .label-container { text-align: center; border: 2px solid #eee; padding: 20px; border-radius: 10px; }
                         img { width: 200px; height: 200px; margin-bottom: 10px; }
                         h2 { margin: 0; font-size: 18px; color: #333; }
                         p { margin: 5px 0 0; font-size: 14px; font-weight: bold; color: #666; }
@@ -504,58 +534,6 @@
                         <h2>${item.name}</h2>
                         <p>${item.kode_aset}</p>
                     </div>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-    }
-
-    function printAllLabels() {
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        const items = @json($items->items());
-        
-        let labelsHtml = '';
-        items.forEach(item => {
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${item.kode_aset}`;
-            labelsHtml += `
-                <div class="label-card">
-                    <img src="${qrUrl}" alt="QR Code">
-                    <div class="info">
-                        <div class="name">${item.name}</div>
-                        <div class="code">${item.kode_aset}</div>
-                    </div>
-                </div>
-            `;
-        });
-
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Cetak Semua Label QR</title>
-                    <style>
-                        body { font-family: sans-serif; padding: 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-                        .label-card { 
-                            width: 250px; 
-                            border: 1px solid #ddd; 
-                            padding: 15px; 
-                            display: flex; 
-                            align-items: center; 
-                            gap: 15px;
-                            border-radius: 8px;
-                            page-break-inside: avoid;
-                        }
-                        img { width: 80px; height: 80px; }
-                        .info { text-align: left; }
-                        .name { font-size: 14px; font-weight: bold; margin-bottom: 4px; color: #333; }
-                        .code { font-size: 12px; color: #666; font-family: monospace; }
-                        @media print {
-                            body { padding: 0; }
-                            .label-card { border: 1px solid #eee; }
-                        }
-                    </style>
-                </head>
-                <body onload="window.print(); window.close();">
-                    ${labelsHtml}
                 </body>
             </html>
         `);
@@ -576,3 +554,4 @@
     });
 </script>
 @endpush
+@endsection

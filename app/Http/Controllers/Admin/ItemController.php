@@ -102,6 +102,10 @@ class ItemController extends Controller
 
             Item::create($validated);
 
+            if ($request->filled('redirect_to_room')) {
+                return redirect()->route('room.show', $request->redirect_to_room)->with('success', 'Barang berhasil ditambahkan dengan Kode Aset: ' . $validated['kode_aset']);
+            }
+
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil ditambahkan dengan Kode Aset: ' . $validated['kode_aset']);
         } catch (\Exception $e) {
             Log::error('Gagal simpan barang: ' . $e->getMessage(), [
@@ -154,6 +158,10 @@ class ItemController extends Controller
             $item->save();
             $item->delete(); // This will soft delete because of the SoftDeletes trait
             
+            if ($request->filled('redirect_to_room')) {
+                return redirect()->route('room.show', $request->redirect_to_room)->with('success', 'Barang berhasil dipindahkan ke daftar penghapusan.');
+            }
+
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil dipindahkan ke daftar penghapusan.');
         } catch (\Exception $e) {
             Log::error('Gagal hapus barang: ' . $e->getMessage(), ['id' => $id]);
@@ -191,6 +199,10 @@ class ItemController extends Controller
             $validated['tgl_perolehan'] = $validated['purchase_date'];
 
             $item->update($validated);
+
+            if ($request->filled('redirect_to_room')) {
+                return redirect()->route('room.show', $request->redirect_to_room)->with('success', 'Barang berhasil diperbarui!');
+            }
 
             return redirect()->route('inventory.index')->with('success', 'Barang berhasil diperbarui!');
         } catch (\Exception $e) {

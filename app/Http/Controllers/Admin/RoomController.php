@@ -84,4 +84,46 @@ class RoomController extends Controller
 
         return back()->with('success', 'Lokasi penyimpanan berhasil dihapus!');
     }
+
+    public function show($id)
+    {
+        $room = Room::withCount('items')->findOrFail($id);
+        $items = $room->items()->with(['category'])->get();
+        $categories = \App\Models\Category::orderBy('name')->get();
+        $rooms = Room::orderBy('name')->get();
+        // Load all items including soft-deleted ones for the bulk move list
+        $allItems = \App\Models\Item::withTrashed()->where('room_id', $id)->with(['category'])->get();
+        
+        return view('admin.room.show', compact('room', 'items', 'categories', 'rooms', 'allItems'));
+    }
+
+    public function bulkMove(Request $request, $id)
+    {
+        $room = Room::findOrFail($id);
+        
+        $validated = $request->validate([
+            'items' => 'required|array',
+            'items.*' => 'required|exists:rooms,id',
+        ]);
+
+        try {
+            \DB::transaction(function() use ($validated, $id) {
+                foreach ($validated['items'] as $itemId => $targetRoomId) {
+                    // Skip if the target room is the same as the current room
+                    if ($targetRoomId == $id) {
+                        continue;
+                    }
+                    
+                    $item = \App\Models\Item::withTrashed()->findOrFail($itemId);
+                    $item->room_id = $targetRoomId;
+                    $item->save();
+                }
+            });
+
+            return redirect()->route('room.show', $id)->with('success', 'Semua barang terpilih berhasil dipindahkan ke lokasi baru!');
+        } catch (\Exception $e) {
+            \Log::error('Gagal melakukan pemindahan masal barang: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memindahkan barang: ' . $e->getMessage());
+        }
+    }
 }
