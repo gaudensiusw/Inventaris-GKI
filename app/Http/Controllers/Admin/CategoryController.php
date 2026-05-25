@@ -44,8 +44,8 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        if ($category->items()->count() > 0) {
-            return back()->with('error', 'Kategori tidak bisa dihapus karena masih memiliki barang!');
+        if (\App\Models\Item::withTrashed()->where('category_id', $category->id)->exists()) {
+            return back()->with('error', 'Kategori tidak bisa dihapus karena masih memiliki barang (termasuk barang di Disposal)!');
         }
 
         $category->delete();

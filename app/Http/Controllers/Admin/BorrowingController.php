@@ -112,30 +112,38 @@ class BorrowingController extends Controller
 
             $item = Item::findOrFail($borrowing->id_barang);
             
-            // Decrease borrowed qty
-            $item->decrement('qty_dipinjam', $borrowing->qty);
-
-            // Update qty based on return condition
+            // Update physical and operational counts precisely
+            $qtyKembali = $validated['qty_kembali'];
             switch ($validated['kondisi_kembali']) {
                 case 'Baik':
-                    $item->increment('qty_tersedia', $validated['qty_kembali']);
+                    $item->qty_tersedia += $qtyKembali;
                     break;
                 case 'Rusak Ringan':
-                    $item->increment('qty_rusak_ringan', $validated['qty_kembali']);
+                    $item->qty_rusak_ringan += $qtyKembali;
+                    $item->qty_tidak_digunakan += $qtyKembali;
+                    $item->qty_baik = max(0, $item->qty_baik - $qtyKembali);
                     break;
                 case 'Rusak Berat':
-                    $item->increment('qty_rusak_berat', $validated['qty_kembali']);
+                    $item->qty_rusak_berat += $qtyKembali;
+                    $item->qty_tidak_digunakan += $qtyKembali;
+                    $item->qty_baik = max(0, $item->qty_baik - $qtyKembali);
                     break;
                 case 'Hilang':
-                    $item->increment('qty_hilang', $validated['qty_kembali']);
+                    $item->qty_hilang += $qtyKembali;
+                    $item->qty_baik = max(0, $item->qty_baik - $qtyKembali);
                     break;
             }
 
             // If returned less than borrowed, remaining is also counted as lost
-            $notReturned = $borrowing->qty - $validated['qty_kembali'];
+            $notReturned = $borrowing->qty - $qtyKembali;
             if ($notReturned > 0) {
-                $item->increment('qty_hilang', $notReturned);
+                $item->qty_hilang += $notReturned;
+                $item->qty_baik = max(0, $item->qty_baik - $notReturned);
             }
+
+            // Decrease borrowed qty
+            $item->qty_dipinjam = max(0, $item->qty_dipinjam - $borrowing->qty);
+            $item->save();
 
             DB::commit();
             return redirect()->back()->with('success', 'Barang berhasil dikembalikan! Kondisi: ' . $validated['kondisi_kembali']);

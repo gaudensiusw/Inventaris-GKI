@@ -70,7 +70,7 @@ class ItemController extends Controller
             
             // Find the last item in this category to get the next sequence number
             // We look for codes that start with the category ID
-            $lastItem = Item::where('category_id', $categoryId)
+            $lastItem = Item::withTrashed()->where('category_id', $categoryId)
                             ->where('kode_aset', 'REGEXP', '^' . $categoryId . '[0-9]+$')
                             ->orderByRaw('LENGTH(kode_aset) DESC, kode_aset DESC')
                             ->first();

@@ -91,8 +91,26 @@ class RepairController extends Controller
             $repair->update(['status' => 'Selesai']);
 
             $item = Item::findOrFail($repair->id_barang);
-            $item->decrement('qty_diperbaiki', $repair->qty);
-            $item->increment('qty_tersedia', $repair->qty);
+            
+            // Decrease operational repaired count and increase available count
+            $item->qty_diperbaiki = max(0, $item->qty_diperbaiki - $repair->qty);
+            $item->qty_tersedia += $repair->qty;
+
+            // Update physical conditions: restore to good (qty_baik) and clear damaged counts
+            $qtyToRestore = $repair->qty;
+            if ($item->qty_rusak_berat > 0) {
+                $deductBerat = min($item->qty_rusak_berat, $qtyToRestore);
+                $item->qty_rusak_berat -= $deductBerat;
+                $qtyToRestore -= $deductBerat;
+            }
+            if ($qtyToRestore > 0 && $item->qty_rusak_ringan > 0) {
+                $deductRingan = min($item->qty_rusak_ringan, $qtyToRestore);
+                $item->qty_rusak_ringan -= $deductRingan;
+                $qtyToRestore -= $deductRingan;
+            }
+            
+            $item->qty_baik += $repair->qty;
+            $item->save();
 
             DB::commit();
             return redirect()->back()->with('success', 'Perbaikan berhasil diselesaikan!');
