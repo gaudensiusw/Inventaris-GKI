@@ -14,7 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Lucide Icons (pinned version) -->
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
     
     <!-- Tom Select -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">

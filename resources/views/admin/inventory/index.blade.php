@@ -63,10 +63,44 @@
                     <option value="{{ $room->id }}" {{ $roomId == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
                 @endforeach
             </select>
-            <a href="{{ route('inventory.export') }}" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span>Export</span>
-            </a>
+            <!-- Export Dropdown -->
+            <div class="relative inline-block text-left" id="exportDropdownContainer">
+                <button onclick="toggleExportDropdown(event)" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm focus:outline-none">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Export</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 shrink-0 transition-transform duration-200" id="exportChevron"></i>
+                </button>
+                <div id="exportDropdownMenu" class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-100/50 py-2 hidden z-[1000]">
+                    <a href="{{ route('inventory.export', request()->query()) }}" class="flex items-center gap-2.5 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors uppercase tracking-wider">
+                        <i data-lucide="file-spreadsheet" class="w-4.5 h-4.5 text-emerald-500"></i>
+                        <span>Export CSV</span>
+                    </a>
+                    <a href="{{ route('inventory.export-pdf', request()->query()) }}" class="flex items-center gap-2.5 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors border-t border-slate-50 uppercase tracking-wider">
+                        <i data-lucide="file-text" class="w-4.5 h-4.5 text-blue-500"></i>
+                        <span>Export PDF</span>
+                    </a>
+                </div>
+            </div>
+
+            <script>
+                function toggleExportDropdown(event) {
+                    event.stopPropagation();
+                    const menu = document.getElementById('exportDropdownMenu');
+                    const chevron = document.getElementById('exportChevron');
+                    menu.classList.toggle('hidden');
+                    chevron.classList.toggle('rotate-180');
+                }
+
+                document.addEventListener('click', function(event) {
+                    const menu = document.getElementById('exportDropdownMenu');
+                    const chevron = document.getElementById('exportChevron');
+                    const container = document.getElementById('exportDropdownContainer');
+                    if (container && !container.contains(event.target)) {
+                        menu.classList.add('hidden');
+                        chevron.classList.remove('rotate-180');
+                    }
+                });
+            </script>
             <button onclick="printAllLabels()" class="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-all shadow-sm">
                 <i data-lucide="printer" class="w-4 h-4 text-emerald-500"></i>
                 <span>Cetak Semua Label QR</span>

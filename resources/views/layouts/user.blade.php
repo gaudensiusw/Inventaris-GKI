@@ -7,7 +7,7 @@
     <title>GKI Delima - Peminjaman Inventaris</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://unpkg.com/lucide@0.344.0"></script>
+    <script src="{{ asset('js/lucide.min.js') }}"></script>
 </head>
 <body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col">
     <!-- Navbar -->

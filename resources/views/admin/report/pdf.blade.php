@@ -32,6 +32,15 @@
     <div class="header">
         <h1>Laporan Inventaris</h1>
         <p>GKI Delima - Data per {{ date('d F Y') }}</p>
+        <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: #3b82f6; margin-top: 5px;">
+            Periode: {{ $period == 'monthly' ? Carbon\Carbon::create()->month($month)->format('F') . ' ' . $year : $year }}
+            @if(isset($selectedRoom) && $selectedRoom)
+                | Ruangan: {{ $selectedRoom }}
+            @endif
+            @if(isset($selectedCategory) && $selectedCategory)
+                | Kategori: {{ $selectedCategory }}
+            @endif
+        </p>
     </div>
 
     <div class="clearfix">
@@ -123,6 +132,42 @@
                 <tr><td>Sudah Selesai</td><td class="text-right">{{ $repairStats['finished'] }}</td></tr>
             </table>
         </div>
+    </div>
+
+    <div class="clearfix" style="margin-top: 20px; page-break-before: always;">
+        <div class="section-title">Detail Daftar Barang Aset</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%; text-align: center;">No</th>
+                    <th style="width: 15%;">Kode Aset</th>
+                    <th style="width: 30%;">Nama Barang</th>
+                    <th style="width: 15%;">Kategori</th>
+                    <th style="width: 15%;">Ruangan</th>
+                    <th style="width: 10%; text-align: right;">Stok</th>
+                    <th style="width: 10%; text-align: right;">Tersedia</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($items as $index => $item)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td style="font-family: monospace;">{{ $item->kode_aset }}</td>
+                    <td style="font-weight: bold;">{{ $item->name }}</td>
+                    <td>{{ $item->category->name ?? '-' }}</td>
+                    <td>{{ $item->room->name ?? '-' }}</td>
+                    <td class="text-right">{{ number_format($item->quantity) }}</td>
+                    <td class="text-right">{{ number_format($item->qty_tersedia) }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center" style="color: #666; padding: 20px;">
+                        Tidak ada barang yang terdaftar untuk filter ini.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     <div class="footer">

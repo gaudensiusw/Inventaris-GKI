@@ -118,9 +118,31 @@ class ItemController extends Controller
 
     // Method show() dihapus — detail barang ditampilkan via modal popup di halaman index.
 
-    public function exportCsv()
+    public function exportCsv(Request $request)
     {
-        $items = Item::with(['category', 'room'])->get();
+        $search = $request->get('search');
+        $categoryId = $request->get('category_id');
+        $roomId = $request->get('room_id');
+
+        $query = Item::with(['category', 'room']);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('kode_aset', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($roomId) {
+            $query->where('room_id', $roomId);
+        }
+
+        $items = $query->latest()->get();
         $csvHeader = ['ID', 'Kode Aset', 'Nama', 'Kategori', 'Lokasi', 'Total', 'Tersedia'];
         
         $callback = function() use ($items, $csvHeader) {
@@ -147,6 +169,38 @@ class ItemController extends Controller
             "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
             "Expires" => "0"
         ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $search = $request->get('search');
+        $categoryId = $request->get('category_id');
+        $roomId = $request->get('room_id');
+
+        $query = Item::with(['category', 'room']);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('kode_aset', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($roomId) {
+            $query->where('room_id', $roomId);
+        }
+
+        $items = $query->latest()->get();
+        $selectedRoom = $roomId ? Room::find($roomId)->name : null;
+        $selectedCategory = $categoryId ? Category::find($categoryId)->name : null;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.inventory.pdf', compact('items', 'search', 'selectedRoom', 'selectedCategory'));
+        return $pdf->download('Inventaris-GKI-Delima.pdf');
     }
 
     public function destroy(Request $request, $id)

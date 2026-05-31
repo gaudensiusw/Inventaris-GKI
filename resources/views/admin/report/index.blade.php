@@ -9,11 +9,15 @@
             <p class="text-slate-500 text-sm mt-1">Analisis dan statistik inventaris GKI Delima</p>
         </div>
         <div class="flex gap-3 w-full md:w-auto">
-            <a href="{{ request()->fullUrlWithQuery(['export_pdf' => 1]) }}" class="flex-1 md:flex-none px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl text-xs font-black uppercase shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-                <i data-lucide="download" class="w-4 h-4"></i>
+            <a href="{{ request()->fullUrlWithQuery(['export_pdf' => 1]) }}" class="flex-1 md:flex-none px-5 py-3 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
                 Export PDF
             </a>
-            <a href="{{ route('dashboard') }}" class="flex-1 md:flex-none px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl text-xs font-black uppercase shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+            <a href="{{ route('report.export-csv', request()->query()) }}" class="flex-1 md:flex-none px-5 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                Export CSV
+            </a>
+            <a href="{{ route('dashboard') }}" class="flex-1 md:flex-none px-5 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl text-xs font-black uppercase shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 Kembali
             </a>
@@ -22,7 +26,7 @@
 
     <!-- Filter Bar -->
     <div class="card-premium p-4 border-none flex flex-wrap items-center justify-between gap-6">
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
                 <button onclick="changePeriod('monthly')" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all {{ $period == 'monthly' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">Bulanan</button>
                 <button onclick="changePeriod('yearly')" class="px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all {{ $period == 'yearly' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">Tahunan</button>
@@ -39,8 +43,24 @@
                     <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
                 @endforeach
             </select>
+
+            <!-- Room Filter -->
+            <select onchange="updateFilter('room_id', this.value)" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-400">
+                <option value="">Semua Ruangan</option>
+                @foreach($rooms as $r)
+                    <option value="{{ $r->id }}" {{ $roomId == $r->id ? 'selected' : '' }}>{{ $r->name }}</option>
+                @endforeach
+            </select>
+
+            <!-- Category Filter -->
+            <select onchange="updateFilter('category_id', this.value)" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-400">
+                <option value="">Semua Kategori</option>
+                @foreach($categories as $c)
+                    <option value="{{ $c->id }}" {{ $categoryId == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
+                @endforeach
+            </select>
         </div>
-        <div class="hidden md:block">
+        <div class="hidden lg:block">
             <span class="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">
                 {{ $period == 'monthly' ? Carbon\Carbon::create()->month($month)->format('F') . ' ' . $year : $year }}
             </span>

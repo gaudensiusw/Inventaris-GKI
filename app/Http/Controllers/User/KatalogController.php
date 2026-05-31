@@ -102,4 +102,28 @@ class KatalogController extends Controller
             'message' => 'Barang dengan kode tersebut tidak ditemukan.'
         ]);
     }
+
+    public function show($id)
+    {
+        $item = Item::with(['category', 'room'])->findOrFail($id);
+        
+        // Fetch pending and approved orders for this item
+        $orders = \App\Models\Order::where('id_barang', $id)
+            ->whereIn('status', ['Pending', 'Disetujui'])
+            ->get();
+            
+        // Map orders to calendar events
+        $events = $orders->map(function($order) {
+            $color = $order->status === 'Disetujui' ? '#ef4444' : '#f97316'; // Red for Booked (Approved), Orange for Pending Request
+            return [
+                'title' => ($order->status === 'Disetujui' ? 'Booked' : 'Pending') . ' (' . $order->nama_peminjam . ')',
+                'start' => $order->start_date->format('Y-m-d'),
+                'end' => $order->end_date->addDay()->format('Y-m-d'), // add 1 day for inclusive end date display
+                'color' => $color,
+                'allDay' => true,
+            ];
+        });
+
+        return view('user.katalog.show', compact('item', 'events'));
+    }
 }

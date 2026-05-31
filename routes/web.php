@@ -36,6 +36,7 @@ Route::prefix('admin')->middleware(['auth', 'role:Super Admin,Admin'])->group(fu
     Route::get('/inventory/create', [ItemController::class, 'create'])->name('inventory.create');
     Route::post('/inventory/store', [ItemController::class, 'store'])->name('inventory.store');
     Route::get('/inventory/export', [ItemController::class, 'exportCsv'])->name('inventory.export');
+    Route::get('/inventory/export-pdf', [ItemController::class, 'exportPdf'])->name('inventory.export-pdf');
     Route::delete('/inventory/{id}', [ItemController::class, 'destroy'])->name('inventory.destroy');
     Route::put('/inventory/{id}', [ItemController::class, 'update'])->name('inventory.update');
     
@@ -73,6 +74,7 @@ Route::prefix('admin')->middleware(['auth', 'role:Super Admin,Admin'])->group(fu
     Route::get('/special-status', [SpecialStatusController::class, 'index'])->name('special-status.index');
     Route::get('/report', [ReportController::class, 'index'])->name('report.index');
     Route::get('/report/comparison', [ReportController::class, 'comparison'])->name('report.comparison');
+    Route::get('/report/export-csv', [ReportController::class, 'exportCsv'])->name('report.export-csv');
     Route::get('/disposal', [DisposalController::class, 'index'])->name('disposal.index');
     Route::post('/disposal/{id}/restore', [DisposalController::class, 'restore'])->name('disposal.restore');
 
@@ -108,6 +110,7 @@ Route::prefix('admin')->middleware(['auth', 'role:Super Admin'])->group(function
 Route::prefix('peminjaman')->name('user.')->group(function () {
     // Katalog barang publik
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
+    Route::get('/katalog/{id}', [KatalogController::class, 'show'])->name('katalog.show');
     
     // Lokasi penyimpanan publik
     Route::get('/lokasi', [KatalogController::class, 'rooms'])->name('katalog.rooms');
