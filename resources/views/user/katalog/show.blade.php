@@ -140,11 +140,11 @@
                     <!-- Legend -->
                     <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider">
                         <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 bg-orange-500 rounded-full"></span>
+                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color: #f97316;"></span>
                             <span class="text-slate-500">Pending</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color: #ef4444;"></span>
                             <span class="text-slate-500">Disetujui</span>
                         </div>
                     </div>
