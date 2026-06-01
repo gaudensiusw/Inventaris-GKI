@@ -33,7 +33,7 @@
                             <span class="hidden sm:inline">Beranda</span>
                         </span>
                     </a>
-                    <a href="{{ route('user.katalog.index') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('user.katalog.*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
+                    <a href="{{ route('user.katalog.index') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('user.katalog.index', 'user.katalog.show') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
                         <span class="flex items-center gap-2">
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                             <span class="hidden sm:inline">Form Peminjaman</span>

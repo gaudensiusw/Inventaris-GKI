@@ -114,7 +114,7 @@ class KatalogController extends Controller
             
         // Map orders to calendar events
         $events = $orders->map(function($order) {
-            $color = $order->status === 'Disetujui' ? '#ef4444' : '#f97316'; // Red for Booked (Approved), Orange for Pending Request
+            $color = $order->status === 'Disetujui' ? '#10b981' : '#f97316'; // Green for Booked (Approved), Orange for Pending Request
             return [
                 'title' => ($order->status === 'Disetujui' ? 'Booked' : 'Pending') . ' (' . $order->nama_peminjam . ')',
                 'start' => $order->start_date->format('Y-m-d'),

@@ -144,7 +144,7 @@
                             <span class="text-slate-500">Pending</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color: #ef4444;"></span>
+                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color: #10b981;"></span>
                             <span class="text-slate-500">Disetujui</span>
                         </div>
                     </div>
