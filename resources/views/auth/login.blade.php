@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login Admin - Inventaris GKI Delima</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-gki.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/lucide.min.js') }}"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
