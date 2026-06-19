@@ -58,6 +58,12 @@
                             <span class="hidden sm:inline">Cek Status</span>
                         </span>
                     </a>
+                    
+                    <!-- Admin Button -->
+                    <a href="{{ route('login') }}" class="ml-1 px-3 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-sm border border-slate-700">
+                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        <span>Admin</span>
+                    </a>
                 </div>
             </div>
         </div>
