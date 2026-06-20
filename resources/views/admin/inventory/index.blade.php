@@ -271,7 +271,7 @@
                 <button onclick="closeModal('addItemModal')" class="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <form action="{{ route('inventory.store') }}" method="POST" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <form action="{{ route('inventory.store') }}" method="POST" enctype="multipart/form-data" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 @csrf
                 @include('admin.inventory._form_fields', ['isEdit' => false])
 
@@ -308,7 +308,7 @@
                 <button onclick="closeModal('editItemModal')" class="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <form id="editForm" action="" method="POST" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <form id="editForm" action="" method="POST" enctype="multipart/form-data" class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="edit_item_id" name="item_id" value="{{ old('item_id', session('edit_item_id')) }}">
@@ -483,6 +483,25 @@
         const form = document.getElementById('editForm');
         form.action = `/admin/inventory/${item.id}`;
         
+        // Reset file input and preview container for new upload
+        form.querySelector('[name="image"]').value = '';
+        const previewContainer = document.getElementById('image_preview_container_edit');
+        if (previewContainer) {
+            previewContainer.classList.add('hidden');
+            document.getElementById('image_preview_edit').src = '';
+        }
+        
+        // Handle current image preview
+        const currentImgContainer = document.getElementById('current_image_container_edit');
+        const currentImgPreview = document.getElementById('current_image_preview_edit');
+        if (item.image_url) {
+            if (currentImgPreview) currentImgPreview.src = item.image_url;
+            if (currentImgContainer) currentImgContainer.classList.remove('hidden');
+        } else {
+            if (currentImgPreview) currentImgPreview.src = '';
+            if (currentImgContainer) currentImgContainer.classList.add('hidden');
+        }
+
         // Fill form fields
         form.querySelector('[name="name"]').value = item.name;
         form.querySelector('[name="category_id"]').value = item.category_id;

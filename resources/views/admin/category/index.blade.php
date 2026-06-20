@@ -63,9 +63,15 @@
                                     class="p-2 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-100 transition-all" title="Edit">
                                     <i data-lucide="pencil" class="w-4 h-4"></i>
                                 </button>
-                                @if($category->items_count === 0)
+                                @if(auth()->user()->isSuperAdmin() && $category->name !== 'Belum Dikategorikan')
                                 <form method="POST" action="{{ route('categories.destroy', $category->id) }}" 
-                                    onsubmit="return confirmSubmit(this, {title: 'Hapus Kategori?', message: 'Kategori {{ addslashes($category->name) }} akan dihapus.', icon: 'trash-2', color: 'red', confirmText: 'Ya, Hapus'})">
+                                    onsubmit="return confirmSubmit(this, {
+                                        title: 'Hapus Kategori?', 
+                                        message: 'Kategori {{ addslashes($category->name) }} akan dihapus.{{ $category->items_count > 0 ? " Semua " . $category->items_count . " barang di dalamnya akan dipindahkan ke kategori \'Belum Dikategorikan\'." : "" }}', 
+                                        icon: 'trash-2', 
+                                        color: 'red', 
+                                        confirmText: 'Ya, Hapus'
+                                    })">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all" title="Hapus">

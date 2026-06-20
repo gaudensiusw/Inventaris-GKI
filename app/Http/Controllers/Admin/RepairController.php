@@ -98,18 +98,22 @@ class RepairController extends Controller
 
             // Update physical conditions: restore to good (qty_baik) and clear damaged counts
             $qtyToRestore = $repair->qty;
+            $actuallyRepaired = 0;
+            
             if ($item->qty_rusak_berat > 0) {
                 $deductBerat = min($item->qty_rusak_berat, $qtyToRestore);
                 $item->qty_rusak_berat -= $deductBerat;
                 $qtyToRestore -= $deductBerat;
+                $actuallyRepaired += $deductBerat;
             }
             if ($qtyToRestore > 0 && $item->qty_rusak_ringan > 0) {
                 $deductRingan = min($item->qty_rusak_ringan, $qtyToRestore);
                 $item->qty_rusak_ringan -= $deductRingan;
                 $qtyToRestore -= $deductRingan;
+                $actuallyRepaired += $deductRingan;
             }
             
-            $item->qty_baik += $repair->qty;
+            $item->qty_baik += $actuallyRepaired;
             $item->save();
 
             DB::commit();

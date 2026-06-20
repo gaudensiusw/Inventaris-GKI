@@ -42,11 +42,26 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
+        if (!auth()->user()->isSuperAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $category = Category::findOrFail($id);
 
-        if (\App\Models\Item::withTrashed()->where('category_id', $category->id)->exists()) {
-            return back()->with('error', 'Kategori tidak bisa dihapus karena masih memiliki barang (termasuk barang di Disposal)!');
+        if ($category->name === 'Belum Dikategorikan') {
+            return back()->with('error', 'Kategori default tidak bisa dihapus!');
         }
+
+        // Find or create default category "Belum Dikategorikan"
+        $defaultCategory = Category::firstOrCreate(
+            ['name' => 'Belum Dikategorikan'],
+            ['description' => 'Kategori default untuk barang yang kategorinya telah dihapus.']
+        );
+
+        // Move all items (including soft-deleted ones) belonging to the deleted category to the default category
+        \App\Models\Item::withTrashed()
+            ->where('category_id', $category->id)
+            ->update(['category_id' => $defaultCategory->id]);
 
         $category->delete();
 

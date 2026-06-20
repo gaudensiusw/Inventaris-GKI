@@ -19,6 +19,30 @@
                 </select>
             </div>
         </div>
+        <!-- Field Upload Gambar -->
+        <div class="flex flex-col gap-2 mt-1">
+            <label class="text-xs font-bold text-slate-500 ml-1">Foto Barang</label>
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div class="flex-1 w-full">
+                    <input type="file" name="image" accept="image/*" onchange="previewImage(this, '{{ $isEdit ? 'edit' : 'add' }}')"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                    <p class="text-[10px] text-slate-400 mt-1 ml-1">Format: JPG, JPEG, PNG, WEBP. Maks: 2MB.</p>
+                </div>
+                <div id="image_preview_container_{{ $isEdit ? 'edit' : 'add' }}" class="hidden w-20 h-20 rounded-2xl border border-slate-200 overflow-hidden relative shrink-0">
+                    <img id="image_preview_{{ $isEdit ? 'edit' : 'add' }}" src="" class="w-full h-full object-cover">
+                </div>
+            </div>
+            @if($isEdit)
+                <!-- Existing Image Preview -->
+                <div id="current_image_container_edit" class="hidden flex items-center gap-3 mt-2 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                    <img id="current_image_preview_edit" src="" class="w-14 h-14 rounded-xl object-cover border border-slate-200">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Gambar Saat Ini</span>
+                        <span class="text-xs font-medium text-slate-600">Terbaca dari database</span>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
     <!-- Lokasi dan Jumlah -->
@@ -125,6 +149,22 @@
 
 <script>
     if (typeof validateForm !== 'function') {
+        window.previewImage = function(input, type) {
+            const container = document.getElementById('image_preview_container_' + type);
+            const preview = document.getElementById('image_preview_' + type);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                container.classList.add('hidden');
+            }
+        }
+
         window.updateLimits = function(type) {
             validateForm(type);
         }

@@ -20,6 +20,11 @@ class Room extends Model
 
     public function getRoomImage()
     {
+        // First check if a custom uploaded image path is saved in the database
+        if ($this->image && file_exists(public_path('storage/' . $this->image))) {
+            return asset('storage/' . $this->image);
+        }
+
         if (empty($this->name)) {
             return null;
         }

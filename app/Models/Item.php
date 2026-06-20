@@ -66,6 +66,11 @@ class Item extends Model
 
     public function getItemImage()
     {
+        // First check if a custom uploaded image path is saved in the database
+        if ($this->image && file_exists(public_path('storage/' . $this->image))) {
+            return asset('storage/' . $this->image);
+        }
+
         if (empty($this->name)) {
             return null;
         }

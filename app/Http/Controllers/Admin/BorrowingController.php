@@ -130,7 +130,6 @@ class BorrowingController extends Controller
                     break;
                 case 'Hilang':
                     $item->qty_hilang += $qtyKembali;
-                    $item->qty_baik = max(0, $item->qty_baik - $qtyKembali);
                     break;
             }
 
@@ -138,7 +137,6 @@ class BorrowingController extends Controller
             $notReturned = $borrowing->qty - $qtyKembali;
             if ($notReturned > 0) {
                 $item->qty_hilang += $notReturned;
-                $item->qty_baik = max(0, $item->qty_baik - $notReturned);
             }
 
             // Decrease borrowed qty

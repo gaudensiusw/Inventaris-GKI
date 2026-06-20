@@ -80,6 +80,7 @@ class StockOpnameController extends Controller
                 if ($difference != 0) {
                     $item->qty_baik = max(0, $item->qty_baik + $difference);
                     $item->qty_tersedia = max(0, $item->qty_tersedia + $difference);
+                    $item->quantity = $item->qty_baik + $item->qty_rusak_ringan + $item->qty_rusak_berat;
                     $item->save();
                 }
             }

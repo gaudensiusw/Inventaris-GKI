@@ -9,6 +9,7 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
@@ -62,6 +63,7 @@ class ItemController extends Controller
             'qty_pengadaan' => 'required|integer|min:0',
             'purchase_date' => 'nullable|date',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         try {
@@ -99,6 +101,11 @@ class ItemController extends Controller
             $validated['is_write_off'] = false;
             $validated['keterangan'] = $validated['description'];
             $validated['tgl_perolehan'] = $validated['purchase_date'];
+
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('items', 'public');
+                $validated['image'] = $path;
+            }
 
             Item::create($validated);
 
@@ -241,6 +248,7 @@ class ItemController extends Controller
             'qty_pengadaan' => 'required|integer|min:0',
             'purchase_date' => 'nullable|date',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
         try {
@@ -251,6 +259,15 @@ class ItemController extends Controller
             $validated['status'] = $validated['qty_tersedia'] > 0 ? 'Tersedia' : ($validated['qty_dipinjam'] > 0 ? 'Dipinjam' : 'Lainnya');
             $validated['keterangan'] = $validated['description'];
             $validated['tgl_perolehan'] = $validated['purchase_date'];
+
+            if ($request->hasFile('image')) {
+                // Delete old image
+                if ($item->image) {
+                    Storage::disk('public')->delete($item->image);
+                }
+                $path = $request->file('image')->store('items', 'public');
+                $validated['image'] = $path;
+            }
 
             $item->update($validated);
 
