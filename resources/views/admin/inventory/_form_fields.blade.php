@@ -136,6 +136,11 @@
                 <input type="date" name="purchase_date" value="{{ old('purchase_date') }}"
                     class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
             </div>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-slate-500 ml-1">Harga Barang (Rupiah)</label>
+                <input type="number" name="price" value="{{ old('price') }}" min="0" step="0.01" placeholder="Contoh: 1500000"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+            </div>
         </div>
     </div>
 

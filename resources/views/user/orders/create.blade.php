@@ -41,17 +41,20 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-bold text-slate-500 mb-2">Nama Peminjam *</label>
-                <input type="text" name="nama_peminjam" value="{{ old('nama_peminjam') }}" required placeholder="Nama lengkap Anda"
+                <input type="text" name="nama_peminjam" value="{{ old('nama_peminjam', auth()->user() ? auth()->user()->name : '') }}" required placeholder="Nama lengkap Anda"
                     class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all @error('nama_peminjam') border-red-400 @enderror">
                 @error('nama_peminjam') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-500 mb-2">No. HP / Email *</label>
-                <input type="text" name="kontak_peminjam" value="{{ old('kontak_peminjam') }}" required placeholder="081234567890 atau email"
+                <input type="text" name="kontak_peminjam" value="{{ old('kontak_peminjam', auth()->user() ? (auth()->user()->phone ?? auth()->user()->email) : '') }}" required placeholder="081234567890 atau email"
                     class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all @error('kontak_peminjam') border-red-400 @enderror">
                 @error('kontak_peminjam') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
+        @if(auth()->user())
+            <p class="text-[10px] text-slate-400 mt-1 ml-1">💡 Kontak dan nama terisi otomatis dari profil Anda.</p>
+        @endif
 
         <div>
             <label class="block text-xs font-bold text-slate-500 mb-2">Jumlah yang Dipinjam *</label>

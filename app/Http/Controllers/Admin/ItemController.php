@@ -62,6 +62,7 @@ class ItemController extends Controller
             'qty_tidak_digunakan' => 'required|integer|min:0',
             'qty_pengadaan' => 'required|integer|min:0',
             'purchase_date' => 'nullable|date',
+            'price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -247,6 +248,7 @@ class ItemController extends Controller
             'qty_tidak_digunakan' => 'required|integer|min:0',
             'qty_pengadaan' => 'required|integer|min:0',
             'purchase_date' => 'nullable|date',
+            'price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);

@@ -18,113 +18,132 @@ use App\Http\Controllers\User\KatalogController;
 use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
+// Guest login routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // ============================================================
-// ADMIN ROUTES (Super Admin + Admin)
+// ROUTES REQUIRING LOGIN (AUTH)
 // ============================================================
-Route::prefix('admin')->middleware(['auth', 'role:Super Admin,Admin'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/inventory', [ItemController::class, 'index'])->name('inventory.index');
-    Route::get('/inventory/create', [ItemController::class, 'create'])->name('inventory.create');
-    Route::post('/inventory/store', [ItemController::class, 'store'])->name('inventory.store');
-    Route::get('/inventory/export', [ItemController::class, 'exportCsv'])->name('inventory.export');
-    Route::get('/inventory/export-pdf', [ItemController::class, 'exportPdf'])->name('inventory.export-pdf');
-    Route::delete('/inventory/{id}', [ItemController::class, 'destroy'])->name('inventory.destroy');
-    Route::put('/inventory/{id}', [ItemController::class, 'update'])->name('inventory.update');
+Route::middleware(['auth'])->group(function () {
     
-    Route::get('/room', [RoomController::class, 'index'])->name('room.index');
-    Route::get('/room/{id}', [RoomController::class, 'show'])->name('room.show');
-    Route::put('/room/{id}', [RoomController::class, 'update'])->name('room.update');
-    Route::post('/room/{id}/bulk-move', [RoomController::class, 'bulkMove'])->name('room.bulk-move');
-    
-    Route::get('/stock-opname', [StockOpnameController::class, 'index'])->name('stock-opname.index');
-    Route::get('/stock-opname/create', [StockOpnameController::class, 'create'])->name('stock-opname.create');
-    Route::post('/stock-opname/store', [StockOpnameController::class, 'store'])->name('stock-opname.store');
-    Route::get('/stock-opname/{stockOpname}', [StockOpnameController::class, 'show'])->name('stock-opname.show');
-    Route::get('/stock-opname/{stockOpname}/print', [StockOpnameController::class, 'print'])->name('stock-opname.print');
-    
-    // QR Scanner
-    Route::get('/qr-scanner', [QrScannerController::class, 'index'])->name('qr-scanner.index');
-    Route::post('/qr-scanner/search', [QrScannerController::class, 'search'])->name('qr-scanner.search');
-    
-    // Borrowing (existing)
-    Route::get('/borrowing', [BorrowingController::class, 'index'])->name('borrowing.index');
-    Route::post('/borrowing/store', [BorrowingController::class, 'store'])->name('borrowing.store');
-    Route::post('/borrowing/{id}/return', [BorrowingController::class, 'returnItem'])->name('borrowing.return');
-    
-    // Borrowing approval (new)
-    Route::get('/borrowing/requests', [BorrowingController::class, 'pendingRequests'])->name('borrowing.requests');
-    Route::post('/borrowing/requests/{id}/approve', [BorrowingController::class, 'approve'])->name('borrowing.approve');
-    Route::post('/borrowing/requests/{id}/reject', [BorrowingController::class, 'reject'])->name('borrowing.reject');
-    
-    Route::get('/repair', [RepairController::class, 'index'])->name('repair.index');
-    Route::post('/repair/store', [RepairController::class, 'store'])->name('repair.store');
-    Route::post('/repair/{id}/complete', [RepairController::class, 'completeRepair'])->name('repair.complete');
+    // Home / Catalog (public/jemaat view)
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
-    Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
-    
-    Route::get('/special-status', [SpecialStatusController::class, 'index'])->name('special-status.index');
-    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
-    Route::get('/report/comparison', [ReportController::class, 'comparison'])->name('report.comparison');
-    Route::get('/report/export-csv', [ReportController::class, 'exportCsv'])->name('report.export-csv');
-    Route::get('/disposal', [DisposalController::class, 'index'])->name('disposal.index');
-    Route::post('/disposal/{id}/restore', [DisposalController::class, 'restore'])->name('disposal.restore');
+    // Public / Jemaat Borrowing Flow (Requires login)
+    Route::prefix('peminjaman')->name('user.')->group(function () {
+        // Katalog barang publik
+        Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
+        Route::get('/katalog/{id}', [KatalogController::class, 'show'])->name('katalog.show');
+        
+        // Lokasi penyimpanan publik
+        Route::get('/lokasi', [KatalogController::class, 'rooms'])->name('katalog.rooms');
+        Route::get('/lokasi/{id}', [KatalogController::class, 'roomShow'])->name('katalog.rooms.show');
+        
+        // Public QR Scanner
+        Route::get('/scan', [KatalogController::class, 'qrScanner'])->name('katalog.qr-scanner');
+        Route::post('/scan/search', [KatalogController::class, 'qrSearch'])->name('katalog.qr-search');
+        
+        // Form request peminjaman
+        Route::get('/request/{itemId}', [OrderController::class, 'create'])->name('orders.create');
+        Route::post('/request', [OrderController::class, 'store'])->name('orders.store');
+        
+        // Cek status peminjaman (by kode)
+        Route::get('/status', [OrderController::class, 'checkStatus'])->name('orders.status');
+    });
+
+    // Profile Management (Accessible by ALL authenticated users)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // ============================================================
+    // ADMIN COMMON AREA (Super Admin, Admin, Supervisor, Operator)
+    // ============================================================
+    Route::prefix('admin')->middleware(['role:Super Admin,Admin,Supervisor,Operator'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/inventory', [ItemController::class, 'index'])->name('inventory.index');
+        Route::get('/inventory/create', [ItemController::class, 'create'])->name('inventory.create');
+        Route::post('/inventory/store', [ItemController::class, 'store'])->name('inventory.store');
+        
+        Route::get('/room', [RoomController::class, 'index'])->name('room.index');
+        Route::get('/room/{id}', [RoomController::class, 'show'])->name('room.show');
+        
+        Route::get('/qr-scanner', [QrScannerController::class, 'index'])->name('qr-scanner.index');
+        Route::post('/qr-scanner/search', [QrScannerController::class, 'search'])->name('qr-scanner.search');
+        
+        Route::get('/borrowing', [BorrowingController::class, 'index'])->name('borrowing.index');
+        Route::post('/borrowing/store', [BorrowingController::class, 'store'])->name('borrowing.store');
+        
+        Route::get('/repair', [RepairController::class, 'index'])->name('repair.index');
+        Route::post('/repair/store', [RepairController::class, 'store'])->name('repair.store');
+
+        Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+        Route::get('/special-status', [SpecialStatusController::class, 'index'])->name('special-status.index');
+        Route::get('/report/comparison', [ReportController::class, 'comparison'])->name('report.comparison');
+        Route::get('/disposal', [DisposalController::class, 'index'])->name('disposal.index');
+    });
+
+    // ============================================================
+    // ADMIN MODIFYING AREA (Super Admin, Admin, Supervisor)
+    // ============================================================
+    Route::prefix('admin')->middleware(['role:Super Admin,Admin,Supervisor'])->group(function () {
+        Route::delete('/inventory/{id}', [ItemController::class, 'destroy'])->name('inventory.destroy');
+        Route::put('/inventory/{id}', [ItemController::class, 'update'])->name('inventory.update');
+        Route::put('/room/{id}', [RoomController::class, 'update'])->name('room.update');
+        Route::post('/room/{id}/bulk-move', [RoomController::class, 'bulkMove'])->name('room.bulk-move');
+        
+        Route::post('/borrowing/{id}/return', [BorrowingController::class, 'returnItem'])->name('borrowing.return');
+        Route::get('/borrowing/requests', [BorrowingController::class, 'pendingRequests'])->name('borrowing.requests');
+        Route::post('/borrowing/requests/{id}/approve', [BorrowingController::class, 'approve'])->name('borrowing.approve');
+        Route::post('/borrowing/requests/{id}/reject', [BorrowingController::class, 'reject'])->name('borrowing.reject');
+        
+        Route::post('/repair/{id}/complete', [RepairController::class, 'completeRepair'])->name('repair.complete');
+        Route::post('/disposal/{id}/restore', [DisposalController::class, 'restore'])->name('disposal.restore');
+    });
+
+    // ============================================================
+    // REPORT & AUDIT AREA (Super Admin, Admin)
+    // ============================================================
+    Route::prefix('admin')->middleware(['role:Super Admin,Admin'])->group(function () {
+        Route::get('/inventory/export', [ItemController::class, 'exportCsv'])->name('inventory.export');
+        Route::get('/inventory/export-pdf', [ItemController::class, 'exportPdf'])->name('inventory.export-pdf');
+        
+        Route::get('/stock-opname', [StockOpnameController::class, 'index'])->name('stock-opname.index');
+        Route::get('/stock-opname/create', [StockOpnameController::class, 'create'])->name('stock-opname.create');
+        Route::post('/stock-opname/store', [StockOpnameController::class, 'store'])->name('stock-opname.store');
+        Route::get('/stock-opname/{stockOpname}', [StockOpnameController::class, 'show'])->name('stock-opname.show');
+        Route::get('/stock-opname/{stockOpname}/print', [StockOpnameController::class, 'print'])->name('stock-opname.print');
+        
+        Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+        Route::get('/report/export-csv', [ReportController::class, 'exportCsv'])->name('report.export-csv');
+    });
+
+    // ============================================================
+    // SUPER ADMIN ONLY AREA (Super Admin)
+    // ============================================================
+    Route::prefix('admin')->middleware(['role:Super Admin'])->group(function () {
+        // User management
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        
+        // Category management
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        
+        // Room create/delete
+        Route::post('/room', [RoomController::class, 'store'])->name('room.store');
+        Route::delete('/room/{id}', [RoomController::class, 'destroy'])->name('room.destroy');
+        
+        // Permanent delete (disposal)
+        Route::delete('/disposal/{id}/force', [DisposalController::class, 'forceDelete'])->name('disposal.forceDelete');
+    });
 
 });
-
-// ============================================================
-// SUPER ADMIN ONLY ROUTES
-// ============================================================
-Route::prefix('admin')->middleware(['auth', 'role:Super Admin'])->group(function () {
-    // User management
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::post('/users', [UserController::class, 'store'])->name('users.store');
-    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-    
-    // Category management
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-    
-    // Room create/delete (edit is for all admins above)
-    Route::post('/room', [RoomController::class, 'store'])->name('room.store');
-    Route::delete('/room/{id}', [RoomController::class, 'destroy'])->name('room.destroy');
-    
-    // Permanent delete (disposal)
-    Route::delete('/disposal/{id}/force', [DisposalController::class, 'forceDelete'])->name('disposal.forceDelete');
-});
-
-// ============================================================
-// PUBLIC ROUTES — Katalog & Form Peminjaman (Tanpa Login)
-// ============================================================
-Route::prefix('peminjaman')->name('user.')->group(function () {
-    // Katalog barang publik
-    Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
-    Route::get('/katalog/{id}', [KatalogController::class, 'show'])->name('katalog.show');
-    
-    // Lokasi penyimpanan publik
-    Route::get('/lokasi', [KatalogController::class, 'rooms'])->name('katalog.rooms');
-    Route::get('/lokasi/{id}', [KatalogController::class, 'roomShow'])->name('katalog.rooms.show');
-    
-    // Public QR Scanner
-    Route::get('/scan', [KatalogController::class, 'qrScanner'])->name('katalog.qr-scanner');
-    Route::post('/scan/search', [KatalogController::class, 'qrSearch'])->name('katalog.qr-search');
-    
-    // Form request peminjaman
-    Route::get('/request/{itemId}', [OrderController::class, 'create'])->name('orders.create');
-    Route::post('/request', [OrderController::class, 'store'])->name('orders.store');
-    
-    // Cek status peminjaman (by kode)
-    Route::get('/status', [OrderController::class, 'checkStatus'])->name('orders.status');
-});
-

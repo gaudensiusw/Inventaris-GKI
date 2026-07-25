@@ -98,8 +98,20 @@
                         <td class="px-6 py-5">
                             @php
                                 $role = $user->roles->first()->name ?? 'Admin';
-                                $roleColor = $role === 'Super Admin' ? 'bg-blue-50 text-blue-600 border-blue-100' : ($role === 'Admin' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-600 border-slate-100');
-                                $roleIcon = $role === 'Super Admin' ? 'shield-check' : 'shield';
+                                $roleColor = match($role) {
+                                    'Super Admin' => 'bg-blue-50 text-blue-600 border-blue-100',
+                                    'Admin' => 'bg-red-50 text-red-600 border-red-100',
+                                    'Supervisor' => 'bg-purple-50 text-purple-600 border-purple-100',
+                                    'Operator' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                    default => 'bg-slate-50 text-slate-600 border-slate-100'
+                                };
+                                $roleIcon = match($role) {
+                                    'Super Admin' => 'shield-check',
+                                    'Admin' => 'shield',
+                                    'Supervisor' => 'eye',
+                                    'Operator' => 'user',
+                                    default => 'user'
+                                };
                             @endphp
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 {{ $roleColor }} rounded-full text-[10px] font-bold uppercase tracking-tight border">
                                 <i data-lucide="{{ $roleIcon }}" class="w-3 h-3"></i>
@@ -141,7 +153,7 @@
                 </div>
                 <div>
                     <h4 class="text-sm font-bold text-slate-800">Super Admin</h4>
-                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke semua fitur termasuk manajemen pengguna, inventaris, dan pengaturan sistem tingkat lanjut.</p>
+                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke semua fitur termasuk manajemen pengguna, kategori, inventaris, dan pengaturan sistem.</p>
                 </div>
             </div>
             <div class="flex gap-4 items-start">
@@ -150,7 +162,25 @@
                 </div>
                 <div>
                     <h4 class="text-sm font-bold text-slate-800">Admin</h4>
-                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke manajemen inventaris dan operasional harian.</p>
+                    <p class="text-xs text-slate-500 mt-1">Akses penuh ke manajemen inventaris, operasional harian, stock opname, dan laporan.</p>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center shrink-0">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-slate-800">Supervisor</h4>
+                    <p class="text-xs text-slate-500 mt-1">Akses mengelola barang (tambah/edit/hapus) dan peminjaman, tanpa akses stock opname & laporan.</p>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start">
+                <div class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-slate-800">Operator</h4>
+                    <p class="text-xs text-slate-500 mt-1">Akses terbatas hanya untuk melihat barang dan menambah barang baru.</p>
                 </div>
             </div>
             <div class="flex gap-4 items-start opacity-50 grayscale">
@@ -158,8 +188,8 @@
                     <i data-lucide="users" class="w-4 h-4"></i>
                 </div>
                 <div>
-                    <h4 class="text-sm font-bold text-slate-800">Customer</h4>
-                    <p class="text-xs text-slate-500 mt-1">Akses terbatas untuk melihat ketersediaan barang.</p>
+                    <h4 class="text-sm font-bold text-slate-800">User</h4>
+                    <p class="text-xs text-slate-500 mt-1">Akses terbatas untuk melihat katalog dan mengajukan peminjaman barang.</p>
                 </div>
             </div>
         </div>
@@ -176,7 +206,7 @@
                     <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
                         <i data-lucide="user-plus" class="w-5 h-5"></i>
                     </div>
-                    <h2 class="text-lg font-black text-slate-800 tracking-tight">Tambah Admin</h2>
+                    <h2 class="text-lg font-black text-slate-800 tracking-tight">Tambah Pengguna</h2>
                 </div>
                 <button onclick="closeModal('addUserModal')" class="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -191,6 +221,15 @@
                     <input type="email" name="email" value="{{ old('email') }}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
                 </div>
                 <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Role / Peran</label>
+                    <select name="role" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                        <option value="Admin">Admin</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Operator">Operator</option>
+                        <option value="User">User / Jemaat</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
                     <input type="password" name="password" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
                 </div>
@@ -200,7 +239,7 @@
                 </div>
                 <div class="pt-4 flex gap-3">
                     <button type="button" onclick="closeModal('addUserModal')" class="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl text-xs font-black uppercase hover:bg-slate-200 transition-all">Batal</button>
-                    <button type="submit" class="flex-[2] py-3 bg-blue-600 text-white rounded-xl text-xs font-black uppercase shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all">Simpan Admin</button>
+                    <button type="submit" class="flex-[2] py-3 bg-blue-600 text-white rounded-xl text-xs font-black uppercase shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all">Simpan</button>
                 </div>
             </form>
         </div>
@@ -217,7 +256,7 @@
                     <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-amber-200">
                         <i data-lucide="edit" class="w-5 h-5"></i>
                     </div>
-                    <h2 class="text-lg font-black text-slate-800 tracking-tight">Edit Admin</h2>
+                    <h2 class="text-lg font-black text-slate-800 tracking-tight">Edit Pengguna</h2>
                 </div>
                 <button onclick="closeModal('editUserModal')" class="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -231,6 +270,15 @@
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Alamat Email</label>
                     <input type="email" name="email" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                </div>
+                <div class="space-y-2" id="edit_role_container">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Role / Peran</label>
+                    <select name="role" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-400 transition-all text-sm font-medium">
+                        <option value="Admin">Admin</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Operator">Operator</option>
+                        <option value="User">User / Jemaat</option>
+                    </select>
                 </div>
                 <div class="space-y-2 pt-2 border-t border-slate-50">
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Password Baru (Opsional)</label>
@@ -263,6 +311,17 @@
         form.action = `/admin/users/${user.id}`;
         form.querySelector('[name="name"]').value = user.name;
         form.querySelector('[name="email"]').value = user.email;
+        
+        // Handle role select container
+        const roleContainer = document.getElementById('edit_role_container');
+        const userRole = (user.roles && user.roles.length > 0) ? user.roles[0].name : '';
+        if (userRole === 'Super Admin') {
+            roleContainer.classList.add('hidden');
+        } else {
+            roleContainer.classList.remove('hidden');
+            form.querySelector('[name="role"]').value = userRole;
+        }
+        
         openModal('editUserModal');
     }
 </script>

@@ -14,9 +14,9 @@
     <!-- Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Lucide Icons (pinned version) -->
+    <!-- Lucide Icons -->
     <script src="{{ asset('js/lucide.min.js') }}"></script>
-    
+
     <!-- Tom Select -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
@@ -42,6 +42,17 @@
         }
         .ts-dropdown .option {
             @apply !px-4 !py-2.5 !text-sm !font-medium !text-slate-600 !rounded-xl;
+        }
+
+        /* Enlarged fonts for tables and form inputs */
+        table th {
+            font-size: 0.9rem !important;
+        }
+        table td {
+            font-size: 0.95rem !important;
+        }
+        input, select, textarea, .ts-control, .ts-dropdown .option {
+            font-size: 0.95rem !important;
         }
     </style>
 

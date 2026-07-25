@@ -45,10 +45,12 @@
                 <i data-lucide="map-pin" class="w-5 h-5 {{ request()->routeIs('room.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Lokasi Penyimpanan</span>
             </a>
+            @if(auth()->user()->isAnyAdmin())
             <a href="{{ route('stock-opname.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('stock-opname.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="clipboard-check" class="w-5 h-5 {{ request()->routeIs('stock-opname.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Stock Opname</span>
             </a>
+            @endif
             <a href="{{ route('qr-scanner.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('qr-scanner.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="qr-code" class="w-5 h-5 {{ request()->routeIs('qr-scanner.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">QR Scanner</span>
@@ -80,6 +82,10 @@
                 <i data-lucide="history" class="w-5 h-5 {{ request()->routeIs('history.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Riwayat</span>
             </a>
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('profile.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
+                <i data-lucide="user" class="w-5 h-5 {{ request()->routeIs('profile.*') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
+                <span class="font-bold">Profil Saya</span>
+            </a>
         </div>
 
         <!-- Lainnya Group -->
@@ -87,6 +93,7 @@
             <span class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Lainnya</span>
         </div>
         <div class="space-y-1 pb-6">
+            @if(auth()->user()->isAnyAdmin())
             <a href="{{ route('report.comparison') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl {{ request()->routeIs('report.comparison') ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white transition-all' }} text-sm group">
                 <i data-lucide="archive" class="w-5 h-5 {{ request()->routeIs('report.comparison') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Arsip Laporan</span>
@@ -95,6 +102,7 @@
                 <i data-lucide="file-text" class="w-5 h-5 {{ request()->routeIs('report.index') ? 'text-white' : 'group-hover:text-blue-400' }} transition-colors"></i>
                 <span class="font-bold">Laporan</span>
             </a>
+            @endif
 
             {{-- Super Admin Only --}}
             @if(auth()->user()->isSuperAdmin())
@@ -113,30 +121,13 @@
 
     <!-- Sidebar Footer -->
     <div class="p-4 border-t border-slate-800 bg-slate-800/20">
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-            @csrf
-        </form>
-        <button type="button" onclick="handleLogout()" 
+        <a href="{{ route('home') }}" 
             class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-red-400 hover:bg-red-500/10 transition-all text-sm font-black group">
             <div class="w-9 h-9 bg-red-500/20 rounded-xl flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
             </div>
-            <span>Keluar Aplikasi</span>
-        </button>
+            <span>Keluar Admin</span>
+        </a>
     </div>
-    <script>
-        function handleLogout() {
-            showConfirm({
-                title: 'Keluar Aplikasi?',
-                message: 'Anda akan keluar dari sesi admin.',
-                color: 'red',
-                icon: 'log-out',
-                onConfirm: () => {
-                    console.log('Logging out...');
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
-    </script>
 </aside>
 

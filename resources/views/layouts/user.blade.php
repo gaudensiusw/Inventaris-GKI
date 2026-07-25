@@ -9,6 +9,18 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/lucide.min.js') }}"></script>
+    <style>
+        /* Enlarged fonts for tables and form inputs */
+        table th {
+            font-size: 0.9rem !important;
+        }
+        table td {
+            font-size: 0.95rem !important;
+        }
+        input, select, textarea, .ts-control, .ts-dropdown .option {
+            font-size: 0.95rem !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col">
     <!-- Navbar -->
@@ -58,12 +70,38 @@
                             <span class="hidden sm:inline">Cek Status</span>
                         </span>
                     </a>
-                    
-                    <!-- Admin Button -->
-                    <a href="{{ route('login') }}" class="ml-1 px-3 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-sm border border-slate-700">
-                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-                        <span>Admin</span>
-                    </a>
+                    <!-- Profile & Authentication Links -->
+                    @auth
+                        @if(auth()->user()->isUser())
+                            <!-- User Profile -->
+                            <a href="{{ route('profile.edit') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('profile.*') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
+                                <span class="flex items-center gap-2">
+                                    <i data-lucide="user" class="w-4 h-4"></i>
+                                    <span class="hidden sm:inline">Profil Saya</span>
+                                </span>
+                            </a>
+                        @else
+                            <!-- Admin Dashboard -->
+                            <a href="{{ route('dashboard') }}" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700' }} transition-all">
+                                <span class="flex items-center gap-2">
+                                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                                    <span class="hidden sm:inline">Dashboard</span>
+                                </span>
+                            </a>
+                        @endif
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                            @csrf
+                        </form>
+                        <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="ml-1 px-3 py-2 bg-red-50 text-red-650 border border-red-100 rounded-xl text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                            <span>Keluar Aplikasi</span>
+                        </button>
+                    @else
+                        <a href="{{ route('login') }}" class="ml-1 px-3 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 shadow-sm border border-slate-700">
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                            <span>Login</span>
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>

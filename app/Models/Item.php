@@ -37,6 +37,7 @@ class Item extends Model
         'condition',
         'status',
         'purchase_date',
+        'price',
         'description',
         'keterangan',
         'is_write_off',

@@ -36,7 +36,7 @@
                     <span class="px-4 py-2.5 bg-white/10 backdrop-blur-md text-white rounded-2xl text-xs font-bold border border-white/10">
                         Total: <b>{{ $items->count() }}</b> jenis barang
                     </span>
-                    @if($allItems->count() > 0)
+                    @if(auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Supervisor']) && $allItems->count() > 0)
                     <button onclick="openModal('bulkMoveModal')" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-xs font-black uppercase shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2" title="Pindahkan seluruh barang di ruangan ini ke lokasi lain secara masal">
                         <i data-lucide="shuffle" class="w-5 h-5"></i>
                         <span>Pindahkan Masal</span>
@@ -159,6 +159,7 @@
                             <div class="flex justify-end gap-1 items-center">
                                 <button onclick="printLabel({{ json_encode($item) }})" class="p-2 hover:bg-emerald-50 text-emerald-500 rounded-lg transition-colors" title="Print Label QR"><i data-lucide="printer" class="w-4 h-4"></i></button>
                                 <button onclick="viewItem({{ json_encode($item) }})" class="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors" title="Detail Barang"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                @if(auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Supervisor']))
                                 <button onclick="editItem({{ json_encode($item) }})" class="p-2 hover:bg-slate-100 text-slate-400 rounded-lg transition-colors" title="Edit Barang"><i data-lucide="edit" class="w-4 h-4"></i></button>
                                 <form action="{{ route('inventory.destroy', $item->id) }}" method="POST" onsubmit="return confirmSubmit(this, { title: 'Hapus Barang?', message: 'Barang akan dipindahkan ke daftar penghapusan dan tidak tampil di inventaris aktif.', color: 'red', icon: 'trash-2', requireReason: true })" class="inline-block">
                                     @csrf
@@ -168,6 +169,7 @@
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -428,6 +430,28 @@
                         </div>
                     </div>
 
+                    <!-- Tanggal Pembelian -->
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                            <i data-lucide="calendar" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Tanggal Pembelian</p>
+                            <p id="view_tanggal" class="text-slate-800 font-semibold mt-1">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Harga Barang -->
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                            <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Harga Barang</p>
+                            <p id="view_harga" class="text-slate-800 font-semibold mt-1">-</p>
+                        </div>
+                    </div>
+
                     <!-- Deskripsi -->
                     <div class="flex items-start gap-4 col-span-1 md:col-span-2">
                         <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0">
@@ -468,6 +492,13 @@
         document.getElementById('view_kategori').innerText = (item.category && item.category.name) ? item.category.name : '-';
         document.getElementById('view_lokasi').innerText = '{{ $room->name }}';
         document.getElementById('view_total').innerText = (item.quantity || 0) + ' Unit';
+        document.getElementById('view_tanggal').innerText = item.purchase_date ? (item.purchase_date.split('T')[0] || item.purchase_date) : '-';
+        if (item.price) {
+            const formattedPrice = new Intl.NumberFormat('id-IDR', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.price);
+            document.getElementById('view_harga').innerText = formattedPrice;
+        } else {
+            document.getElementById('view_harga').innerText = '-';
+        }
         document.getElementById('view_deskripsi').innerText = item.description || 'Tidak ada deskripsi';
 
         // QR Code
@@ -525,7 +556,8 @@
         form.querySelector('[name="qty_hilang"]').value = item.qty_hilang;
         form.querySelector('[name="qty_tidak_digunakan"]').value = item.qty_tidak_digunakan;
         form.querySelector('[name="qty_pengadaan"]').value = item.qty_pengadaan;
-        form.querySelector('[name="purchase_date"]').value = item.purchase_date;
+        form.querySelector('[name="purchase_date"]').value = item.purchase_date ? (item.purchase_date.split('T')[0] || item.purchase_date) : '';
+        form.querySelector('[name="price"]').value = item.price || '';
         form.querySelector('[name="description"]').value = item.description || '';
 
         openModal('editItemModal');

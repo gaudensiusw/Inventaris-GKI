@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('roles')->latest()->paginate(10);
-        $roles = Role::where('name', 'Admin')->get();
+        $roles = Role::whereIn('name', ['Admin', 'Supervisor', 'Operator', 'User'])->get();
         return view('admin.users.index', compact('users', 'roles'));
     }
 
@@ -23,7 +23,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'nullable|in:Admin',
+            'role' => 'nullable|in:Admin,Supervisor,Operator,User',
         ]);
 
         $user = User::create([
@@ -50,7 +50,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
-            'role' => 'nullable|in:Admin',
+            'role' => 'nullable|in:Admin,Supervisor,Operator,User',
         ]);
 
         $user->name = $request->name;
